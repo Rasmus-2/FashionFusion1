@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GroupBWebshop.Models
 {
@@ -17,7 +12,9 @@ namespace GroupBWebshop.Models
         public DbSet<Models.Product> Products { get; set; }
         public DbSet<Models.Customer> Customers { get; set; }
         public DbSet<Models.Category> Categories { get; set; }
-        public DbSet<Models.Type> Types { get; set; }
         public DbSet<Models.Supplier> Suppliers { get; set; }
+        public DbSet<Models.Country> Countries { get; set; }
+        public DbSet<Models.Order> Orders { get; set; }
+        public DbSet<Models.OrderDetails> OrderDetails { get; set; }
     }
 }
