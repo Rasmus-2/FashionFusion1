@@ -18,6 +18,8 @@ namespace GroupBWebshop.Models
         public string PostalCode { get; set; }
         [MaxLength(100)]
         public string City { get; set; }
+
+
         public int CountryId { get; set; }
     }
 }
