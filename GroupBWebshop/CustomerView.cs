@@ -10,7 +10,7 @@ namespace GroupBWebshop
 {
     internal class CustomerView
     {
-        public static void View()
+        public static void View(int customerId)
         {
             List<string> welcomeText = new List<string>() { "Welcome to Fashion Fushion", "The fashion for sustainable generation" };
             Window text = new Window("", 5, 1, welcomeText);
@@ -61,21 +61,23 @@ namespace GroupBWebshop
                             Console.WriteLine("2. View another product");
                             Console.WriteLine("3. Home");
                             var getout = Console.ReadKey();
-                            if(getout.KeyChar == '3')
+                            if (getout.KeyChar == '3')
                             {
                                 quit = true;
                                 Console.Clear();
-                                View();
+                                View(customerId);
 
                             }
-                            else if(getout.KeyChar == '2')
+                            else if (getout.KeyChar == '2')
                             {
                                 ViewAllProducts();
                             }
-                            else if(getout.KeyChar == '1')
+                            else if (getout.KeyChar == '1')
                             {
                                 Console.WriteLine("Enter product's Id: ");
-                                int inputId = int.Parse(Console.ReadLine()); 
+                                int inputId = int.Parse(Console.ReadLine());
+
+                                Order order = new Order() { CustomerId = customerId, Completed = false };
 
                                 List<string> products = new List<string>();
 
@@ -83,7 +85,7 @@ namespace GroupBWebshop
                         }
 
                         break;
-                        
+
                     case '2':
                         Console.WriteLine("");
                         break;
@@ -95,10 +97,10 @@ namespace GroupBWebshop
                         break;
                 }
 
-                
+
             }
 
-            
+
         }
         public static void ViewProduct(int id)
         {
@@ -112,7 +114,7 @@ namespace GroupBWebshop
         }
         public static void ViewAllProducts()
         {
-            using(var myDb = new MyDbContext())
+            using (var myDb = new MyDbContext())
             {
                 foreach (var p in myDb.Products)
                 {
@@ -127,8 +129,8 @@ namespace GroupBWebshop
         public static void AddToCart(int id)
         {
             using (var myDb = new MyDbContext())
-            { 
-                
+            {
+
                 var productChoosen = (from product in myDb.Products
                                       where product.Id == id
                                       select product).SingleOrDefault();
