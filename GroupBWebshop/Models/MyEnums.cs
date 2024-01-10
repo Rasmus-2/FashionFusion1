@@ -20,7 +20,7 @@
         }
         public enum PaymentMethod
         {
-            Klarna,
+            Klarna = 1,
             Credit_Card,
             PayPal,
             Swish

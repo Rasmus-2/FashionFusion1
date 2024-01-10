@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GroupBWebshop.Migrations;
 using GroupBWebshop.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -23,7 +24,7 @@ namespace GroupBWebshop
 
 
             List<string> clothes = new List<string>() { "Pants", "Sweater", "Socks", "T-shirt" };
-            Window window = new Window("Kategori", 2, 10, clothes);
+             Window window = new Window("Kategori", 2, 10, clothes);
             window.Draw();
 
             using (var myDb = new MyDbContext())
@@ -60,6 +61,11 @@ namespace GroupBWebshop
                             Console.Clear();
                             ViewAllProducts();
                             var inputId = int.Parse(Console.ReadLine());
+                            if (inputId == 0)
+                            { 
+                                Console.Clear() ;
+                                View(customerId); 
+                            }
                             ViewProduct(inputId);
 
                             Console.WriteLine("1. Add to cart");
@@ -95,6 +101,8 @@ namespace GroupBWebshop
                                 myDb.Add(orderDetails);
 
                                 myDb.SaveChanges();
+
+
                             }
                         }
 
@@ -111,18 +119,90 @@ namespace GroupBWebshop
                         Console.WriteLine("1. Continue to payment");
                         Console.WriteLine("2. Continue shopping");
                         var exitCart = Console.ReadKey();
-                        if(exitCart.KeyChar == '1')
+                        
+                        if (exitCart.KeyChar == '1')
                         {
+                            Console.Clear();
+                            DrawHomeButton(70);
                             Console.WriteLine("payment methods");
-                            foreach (var i in Enum.GetValues(typeof(MyEnums.PaymentMethod)))
+                            foreach (int i in Enum.GetValues(typeof(MyEnums.PaymentMethod)))
                             {
-                                Console.WriteLine(Enum.GetName(typeof(MyEnums.PaymentMethod), i).Replace('_', ' '));
+                                Console.WriteLine(i +". " + Enum.GetName(typeof(MyEnums.PaymentMethod), i).Replace('_', ' '));
                             }
+                            int number;
+
+                            if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out number))
+                            {
+                                MyEnums.PaymentMethod selection = (MyEnums.PaymentMethod)number;
+                                
+                                switch (selection)
+                                {
+                                    case MyEnums.PaymentMethod.Klarna:
+                                        Console.WriteLine("You choose Klarna!");
+                                        break;
+
+                                    case MyEnums.PaymentMethod.Credit_Card:
+                                        Console.WriteLine("You choose Credit Card!");
+                                        break;
+
+                                    case MyEnums.PaymentMethod.PayPal:
+                                        Console.WriteLine("You choose PayPal!");
+                                        break;
+
+                                    case MyEnums.PaymentMethod.Swish:
+                                        Console.WriteLine("You choose Swish!");
+                                        break;
+                                    default:
+                                        Console.Clear();
+                                        View(customerId);
+                                        break;
+                                }
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input");
+                            }
+
+                            
+                            //Console.WriteLine();
+                            //Console.WriteLine("Enter your prefer payment method: ");
+                            //DrawHomeButton();
+                            //var pay = Console.ReadKey();
+
+                            //switch (pay.KeyChar) 
+                            //{
+                            //    case '0':
+                            //        Console.Clear();
+                            //            View(customerId);
+                            //        break;
+                            //    case '1':
+                            //        Console.WriteLine("");
+
+                            //        break;
+                            //    case '2':
+                            //        break;
+                            //    case '3':
+                            //        break;
+                            //    case '4':
+                            //        break;
+
+                            //}
+                            var completedOrder = GetOrderId(customerId);
+                            completedOrder.Completed = true;
+                            //myDb.Add(completedOrder);
+                            myDb.SaveChanges();
+                            
+                            
+
+
 
                         }
                         else if(exitCart.KeyChar == '2')
                         {
-                            Console.WriteLine("Shopping!");
+                            Console.Clear() ;
+                            View(customerId);
+                            
                         }
                         else
                         {
@@ -131,8 +211,22 @@ namespace GroupBWebshop
                         break;
 
                     case '3':
+                        Console.Clear();
+                        
+                        var infoAcc = (from c in myDb.Customers where c.Id == customerId select c).SingleOrDefault();
+                        Console.WriteLine("Name : " + infoAcc.Name + "\nEmail : " + infoAcc.Email + "\nBirth date : " + infoAcc.BirthDate +"\nAddress : " + infoAcc.StreetName + ", " + infoAcc.PostalCode + ", " + infoAcc.City +".");
+
+                        DrawHomeButton();
+
+                        var zero = Console.ReadKey();
+                        if (zero.KeyChar == '0')
+                        {
+                            Console.Clear();
+                            View(customerId);
+                        }
                         break;
                     case '4':
+                        
                         break;
                     case '5':
                         break;
@@ -182,23 +276,35 @@ namespace GroupBWebshop
             using (var myDb = new MyDbContext())
             {
                 var orderId = GetOrderId(customerId);
+                if (orderId == null)
+                {
 
+                    cart.Add("empty"); 
+                    return cart;
+                }
+
+               
                 var productsInCart = (from o in myDb.OrderDetails
-                                      where o.OrderId == orderId.Id
+                                      where o.OrderId == orderId.Id 
                                       select o.ProductId).ToList();
 
-                foreach (var product in productsInCart)
-                {
-                    var quantityInCart = (from o in myDb.OrderDetails
-                                          where o.ProductId == product
-                                          && o.OrderId == orderId.Id
-                                          select o.Quantity).FirstOrDefault();
+               
+                    foreach (var product in productsInCart)
+                    {
+                        var quantityInCart = (from o in myDb.OrderDetails
+                                              where o.ProductId == product
+                                              && o.OrderId == orderId.Id
+                                              select o.Quantity).FirstOrDefault();
 
-                    var productInfo = (from p in myDb.Products
-                                       where p.Id == product
-                                       select p).SingleOrDefault();
-                    cart.Add(productInfo.Name + ", antal: " + quantityInCart + ", " + productInfo.Price + " SEK styck. Totalt: " + (quantityInCart * productInfo.Price) + " SEK");
-                }
+                        var productInfo = (from p in myDb.Products
+                                           where p.Id == product
+                                           select p).SingleOrDefault();
+                        cart.Add(productInfo.Name + ", antal: " + quantityInCart + ", " + productInfo.Price + " SEK styck. Totalt: " + (quantityInCart * productInfo.Price) + " SEK");
+                    }
+                
+                
+
+               
             }
             return cart;
         }
@@ -228,6 +334,7 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
+
                 foreach (var p in myDb.Products)
                 {
                     Console.WriteLine(p.Id + "" + p.Name + " " + p.Price);
@@ -235,8 +342,22 @@ namespace GroupBWebshop
 
                 Console.WriteLine("View product's info");
                 Console.WriteLine("Enter product's Id: ");
+
+                DrawHomeButton();
+
+
             }
         }
+
+        public static void DrawHomeButton(int left = 50)
+        { 
+            List<string> list = new List<string>() {"Press 0!" };
+            Window homeBox = new Window("Home", left, 1, list);
+            homeBox.Draw();
+           
+        }
+
+    
 
         public static void AddToCart(int id)
         {
