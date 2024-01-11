@@ -123,33 +123,40 @@ namespace GroupBWebshop
                         if (exitCart.KeyChar == '1')
                         {
                             Console.Clear();
+                            cartBox.Draw();
                             DrawHomeButton(70);
-                            Console.WriteLine("payment methods");
+                            Console.WriteLine("Payment methods: ");
                             foreach (int i in Enum.GetValues(typeof(MyEnums.PaymentMethod)))
                             {
                                 Console.WriteLine(i +". " + Enum.GetName(typeof(MyEnums.PaymentMethod), i).Replace('_', ' '));
                             }
                             int number;
+                            string paymentChoice = "";
 
                             if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out number))
                             {
                                 MyEnums.PaymentMethod selection = (MyEnums.PaymentMethod)number;
                                 
+
                                 switch (selection)
                                 {
                                     case MyEnums.PaymentMethod.Klarna:
+                                        paymentChoice = MyEnums.PaymentMethod.Klarna.ToString();
                                         Console.WriteLine("You choose Klarna!");
                                         break;
 
                                     case MyEnums.PaymentMethod.Credit_Card:
+                                        paymentChoice = MyEnums.PaymentMethod.Credit_Card.ToString();
                                         Console.WriteLine("You choose Credit Card!");
                                         break;
 
                                     case MyEnums.PaymentMethod.PayPal:
+                                        paymentChoice = MyEnums.PaymentMethod.PayPal.ToString();
                                         Console.WriteLine("You choose PayPal!");
                                         break;
 
                                     case MyEnums.PaymentMethod.Swish:
+                                        paymentChoice = MyEnums.PaymentMethod.Swish.ToString();
                                         Console.WriteLine("You choose Swish!");
                                         break;
                                     default:
@@ -165,35 +172,48 @@ namespace GroupBWebshop
                             }
 
                             
-                            //Console.WriteLine();
-                            //Console.WriteLine("Enter your prefer payment method: ");
-                            //DrawHomeButton();
-                            //var pay = Console.ReadKey();
-
-                            //switch (pay.KeyChar) 
-                            //{
-                            //    case '0':
-                            //        Console.Clear();
-                            //            View(customerId);
-                            //        break;
-                            //    case '1':
-                            //        Console.WriteLine("");
-
-                            //        break;
-                            //    case '2':
-                            //        break;
-                            //    case '3':
-                            //        break;
-                            //    case '4':
-                            //        break;
-
-                            //}
+                           
                             var completedOrder = GetOrderId(customerId);
+                            
+
+
+                            var stockStatus = (
+                                        from h in myDb.Orders
+                                        join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                                        join his in myDb.Products on hi.ProductId equals his.Id
+                                        where (h.Completed == false && h.CustomerId == customerId)
+                                        select new
+                                        {
+                                           id = his.Id,
+                                           stockStatus = his.StockStatus,
+                                           quantity = hi.Quantity
+                                           
+                                        }).ToList();
+                            
+                            foreach (var status in stockStatus)
+                            {
+                                var quantityUpdate = (from q in myDb.Products
+                                                     where q.Id == status.id
+                                                     select q).SingleOrDefault();
+                                quantityUpdate.StockStatus -= status.quantity;
+
+                                myDb.Update(quantityUpdate);
+                                myDb.SaveChanges();
+                                                    
+                            }
+
                             completedOrder.Completed = true;
-                            //myDb.Add(completedOrder);
+                            completedOrder.Payment = paymentChoice;
+
+                            //myDb.Update(stockStatus);
+                            myDb.Update(completedOrder);
                             myDb.SaveChanges();
-                            
-                            
+
+                            Console.WriteLine("Thank you for your order!");
+                            Console.ReadLine();
+                            Console.Clear();
+                            View(customerId);
+
 
 
 
@@ -225,10 +245,46 @@ namespace GroupBWebshop
                             View(customerId);
                         }
                         break;
+
                     case '4':
-                        
+                        var history = (
+                                        from h in myDb.Orders
+                                        join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                                        join his in myDb.Products on hi.ProductId equals his.Id
+                                        where (h.Completed == true && h.CustomerId == customerId)
+                                        select new
+                                        { 
+                                            id = h.Id,
+                                            name = his.Name,
+                                            price = his.Price,
+                                            quantity = hi.Quantity,
+                                            payment = h.Payment
+                                        });
+                        Console.WriteLine();
+                        Console.WriteLine("Order history: ");
+                        foreach (var h in history)
+                        {
+                            
+                            Console.WriteLine("Order Id: " + h.id + "\nProduct: " + h.name + "\nPrice: " + h.price + "\nQuantity: " + h.quantity + "\nPayment: " + h.payment);
+                            Console.WriteLine();
+                        }
                         break;
+
                     case '5':
+                        Console.WriteLine("Search...");
+                        var search = Console.ReadLine();
+
+                        var productSearch = (from h in myDb.Products where h.Name.Contains(search) || h.Info.Contains(search) || h.Size.Contains(search) || h.Material.Contains(search) select h);
+                        foreach (var product in productSearch)
+                        {
+                            Console.WriteLine(product.Name + " " + product.Info + " "+product.Size + " " + product.Price);
+                            Console.WriteLine();
+                        }
+                        Console.WriteLine("Press enter to go back");
+                        Console.ReadLine();
+                        Console.Clear();
+                        View(customerId);
+
                         break;
                     case '6':
                         break;
