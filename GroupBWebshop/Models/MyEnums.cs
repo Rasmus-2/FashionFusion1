@@ -25,5 +25,12 @@
             PayPal,
             Swish
         }
+
+        public enum DeliveryMethod
+        {
+            DHL = 1,
+            Postnord,
+            Schenker
+        }
     }
 }
