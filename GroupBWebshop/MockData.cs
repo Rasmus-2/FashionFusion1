@@ -33,7 +33,9 @@ namespace GroupBWebshop
 
                 myDb.AddRange(supplier1, supplier2, supplier3);
 
-                Models.Product product1 = new Models.Product
+                var x = new List<Category> { forWomen, forNonbinary, sweaters };
+
+            Models.Product product1 = new Models.Product
                 { Categories = new List<Category> { forWomen, forNonbinary, sweaters }, Name = "Red christmas sweater", Material = Models.MyEnums.Material.Cashmere.ToString(), Size = Models.MyEnums.EnumSize.XS.ToString(), Info = "Beautiful sweater for christmas, only mild itching reported.", Price = 890, StockStatus = 22, SupplierId = 1, DisplayProduct = false };
                 Models.Product product2 = new Models.Product
                 { Categories = new List<Category> { forKids, forNonbinary, tshirt }, Name = "Urban disco T-Shirt", Material = Models.MyEnums.Material.Cotton.ToString(), Size = Models.MyEnums.EnumSize.M.ToString(), Info = "Latest trend on tiktok, comfortable fabric.", Price = 189, StockStatus = 13, SupplierId = 2, DisplayProduct = true };
@@ -58,8 +60,6 @@ namespace GroupBWebshop
 
 
                 myDb.AddRange(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11);
-
-                myDb.SaveChanges();
 
                 myDb.AddRange(
                     new Country

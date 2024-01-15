@@ -11,27 +11,52 @@ namespace GroupBWebshop
     {
         public static void View()
         {
-            //Lägga till produkter
-            //AddProduct();
-            //Produkt: Ändra produktnamn, infotext, pris, produktkategori, leverantör, lagersaldo
-            var name = GetProduct(1);
-            Console.WriteLine(name.Categories);
-            
-            //Ta bort Produkter
+            Console.WriteLine("1. Add product");
+            Console.WriteLine("2. Edit product");
+            //FRÅGA MICKE! Går det att deleta product med tanke på foreign key i completed orders
+            Console.WriteLine("3. Delete product");
+            Console.WriteLine("4. Add category");
+            Console.WriteLine("5. Delete category");
+            Console.WriteLine("6. Edit customer account");
+            Console.WriteLine("7. Delete customer account");
+            Console.WriteLine("8. Log out");
 
-            //CRUD Kategori
-
-            //CRUD kunduppgifter
-
-
-
+            ConsoleKeyInfo key = Console.ReadKey();
+            switch (key.KeyChar)
+            {
+                case '1':
+                    Console.Clear();
+                    AddProduct();
+                    break;
+                case '2':
+                    //EditProduct();
+                    break;
+                case '3':
+                    //DeleteProduct();
+                    break;
+                case '4':
+                    //AddCategory();
+                    break;
+                case '5':
+                    //DeleteCategory();
+                    break;
+                case '6':
+                    //EditCustomer();
+                    break;
+                case '7':
+                    //DeleteCustomer();
+                    break;
+                case '8':
+                    //LogOut();
+                    break;
+            }
         }
 
         public static void AddProduct()
         {
             using (var myDb = new MyDbContext())
             {
-                
+
                 Console.WriteLine("Name: ");
                 string name = Console.ReadLine();
                 Console.WriteLine("Display product? yes/no");
@@ -39,7 +64,7 @@ namespace GroupBWebshop
 
                 bool inputDisplay = false;
                 if (display == "yes")
-                { 
+                {
                     inputDisplay = true;
                 }
 
@@ -122,8 +147,8 @@ namespace GroupBWebshop
                     Console.WriteLine("[" + category.Id + "] " + category.Name);
                 }
 
-                myDb.Add(new Product 
-                { 
+                var product = new Product
+                {
                     Name = name,
                     DisplayProduct = inputDisplay,
                     Size = size,
@@ -132,13 +157,19 @@ namespace GroupBWebshop
                     Price = price,
                     Info = info,
                     StockStatus = stockStatus,
-                    Categories = categories
+                };
+                product.Categories = new List<Category>();
 
-                });
+                for (int i = 0; i < firstCat; i++)
+                {
+                    product.Categories.Add(myDb.Categories.Where(x => x.Id == newCategory[i].Id).SingleOrDefault());
+                }
 
+                myDb.Add(product);
                 myDb.SaveChanges();
             }
-            
+            Console.Clear();
+            View();
         }
         public static Product GetProduct(int id)
         {
@@ -158,7 +189,7 @@ namespace GroupBWebshop
 
                 for (int i = 0; i < numCategory; i++)
                 {
-                    Console.WriteLine("Enter category Id: " + i);
+                    Console.WriteLine("Enter category " + (i + 1) + " Id: ");
 
                     int catText = int.Parse(Console.ReadLine());
 
@@ -177,8 +208,8 @@ namespace GroupBWebshop
             using (var myDb = new MyDbContext())
             {
                 var getCat = (from g in myDb.Categories
-                             where g.Id == id
-                             select g).SingleOrDefault();
+                              where g.Id == id
+                              select g).SingleOrDefault();
 
                 return getCat;
             }
@@ -189,7 +220,7 @@ namespace GroupBWebshop
             using (var myDb = new MyDbContext())
             {
                 var categories = from c in myDb.Categories
-                                select c;
+                                 select c;
 
                 foreach (Category category in categories)
                 {
@@ -205,11 +236,11 @@ namespace GroupBWebshop
                 var suppliers = from s in myDb.Suppliers
                                 select s;
 
-                foreach( Supplier supplier in  suppliers )
+                foreach (Supplier supplier in suppliers)
                 {
                     Console.WriteLine("[" + supplier.Id + "] " + supplier.Name);
                 }
-            }            
+            }
         }
     }
 }
