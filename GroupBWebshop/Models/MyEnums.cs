@@ -12,7 +12,7 @@
         }
         public enum Material
         {
-            Cotton,
+            Cotton = 1,
             Cashmere,
             Polyester,
             Leather,

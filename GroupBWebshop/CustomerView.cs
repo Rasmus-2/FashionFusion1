@@ -16,6 +16,7 @@ namespace GroupBWebshop
     {
         public static void LoginOrAdmin()
         {
+            string password = "asd";
             Console.WriteLine("Admin or customer? a/c");
             while (true)
             {
@@ -24,7 +25,15 @@ namespace GroupBWebshop
                 switch (input.KeyChar)
                 {
                     case 'a':
-
+                        Console.WriteLine("Enter password:");
+                        var pass = Console.ReadLine();
+                        while(pass != password)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Wrong password, try again");
+                            pass = Console.ReadLine();
+                        }
+                        AdminView.View();
                         break;
 
                     case 'c':
@@ -101,7 +110,7 @@ namespace GroupBWebshop
 
 
             List<string> clothes = new List<string>() { "Pants", "Sweater", "Socks", "T-shirt" };
-             Window window = new Window("Kategori", 2, 10, clothes);
+            Window window = new Window("Kategori", 2, 10, clothes);
             window.Draw();
 
             using (var myDb = new MyDbContext())
@@ -139,9 +148,9 @@ namespace GroupBWebshop
                             ViewAllProducts();
                             var inputId = int.Parse(Console.ReadLine());
                             if (inputId == 0)
-                            { 
-                                Console.Clear() ;
-                                View(customerId); 
+                            {
+                                Console.Clear();
+                                View(customerId);
                             }
                             ViewProduct(inputId);
 
@@ -192,12 +201,12 @@ namespace GroupBWebshop
                         finalCart.Add("");
                         finalCart.Add("Total sum: " + total + " SEK");
                         Window cartBox = new Window("Your cart", 1, 1, finalCart);
-                        cartBox.Draw();                       
+                        cartBox.Draw();
                         DrawHomeButton(70);
 
 
                         Console.WriteLine("Choose delivery method: ");
-                        
+
                         foreach (int i in Enum.GetValues(typeof(MyEnums.DeliveryMethod)))
                         {
                             Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.DeliveryMethod), i).Replace('_', ' '));
@@ -227,7 +236,7 @@ namespace GroupBWebshop
                                     Console.WriteLine("You choose Schenker!");
                                     break;
 
-                               
+
                                 default:
                                     Console.Clear();
                                     View(customerId);
@@ -240,116 +249,110 @@ namespace GroupBWebshop
                             Console.WriteLine("Invalid input");
                         }
 
-                        
-                        
-                        
-                        
-                        
-                            Console.Clear();
-                            cartBox.Draw();
-                            DrawHomeButton(70);
-                            Console.WriteLine("Payment methods: ");
-                            foreach (int i in Enum.GetValues(typeof(MyEnums.PaymentMethod)))
+
+
+
+
+
+                        Console.Clear();
+                        cartBox.Draw();
+                        DrawHomeButton(70);
+                        Console.WriteLine("Payment methods: ");
+                        foreach (int i in Enum.GetValues(typeof(MyEnums.PaymentMethod)))
+                        {
+                            Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.PaymentMethod), i).Replace('_', ' '));
+                        }
+                        int number;
+                        string paymentChoice = "";
+                        if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out number))
+                        {
+                            MyEnums.PaymentMethod selection = (MyEnums.PaymentMethod)number;
+
+
+                            switch (selection)
                             {
-                                Console.WriteLine(i +". " + Enum.GetName(typeof(MyEnums.PaymentMethod), i).Replace('_', ' '));
-                            }
-                            int number;
-                            string paymentChoice = "";                            
-                            if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out number))
-                            {
-                                MyEnums.PaymentMethod selection = (MyEnums.PaymentMethod)number;
-                                
+                                case MyEnums.PaymentMethod.Klarna:
+                                    paymentChoice = MyEnums.PaymentMethod.Klarna.ToString();
+                                    Console.WriteLine("You choose Klarna!");
+                                    break;
 
-                                switch (selection)
-                                {
-                                    case MyEnums.PaymentMethod.Klarna:
-                                        paymentChoice = MyEnums.PaymentMethod.Klarna.ToString();
-                                        Console.WriteLine("You choose Klarna!");
-                                        break;
+                                case MyEnums.PaymentMethod.Credit_Card:
+                                    paymentChoice = MyEnums.PaymentMethod.Credit_Card.ToString();
+                                    Console.WriteLine("You choose Credit Card!");
+                                    break;
 
-                                    case MyEnums.PaymentMethod.Credit_Card:
-                                        paymentChoice = MyEnums.PaymentMethod.Credit_Card.ToString();
-                                        Console.WriteLine("You choose Credit Card!");
-                                        break;
+                                case MyEnums.PaymentMethod.PayPal:
+                                    paymentChoice = MyEnums.PaymentMethod.PayPal.ToString();
+                                    Console.WriteLine("You choose PayPal!");
+                                    break;
 
-                                    case MyEnums.PaymentMethod.PayPal:
-                                        paymentChoice = MyEnums.PaymentMethod.PayPal.ToString();
-                                        Console.WriteLine("You choose PayPal!");
-                                        break;
-
-                                    case MyEnums.PaymentMethod.Swish:
-                                        paymentChoice = MyEnums.PaymentMethod.Swish.ToString();
-                                        Console.WriteLine("You choose Swish!");
-                                        break;
-                                    default:
-                                        Console.Clear();
-                                        View(customerId);
-                                        break;
-                                }
-
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input");
+                                case MyEnums.PaymentMethod.Swish:
+                                    paymentChoice = MyEnums.PaymentMethod.Swish.ToString();
+                                    Console.WriteLine("You choose Swish!");
+                                    break;
+                                default:
+                                    Console.Clear();
+                                    View(customerId);
+                                    break;
                             }
 
-                            
-                           
-                            var completedOrder = GetOrderId(customerId);
-                            
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input");
+                        }
 
 
-                            var stockStatus = (
-                                        from h in myDb.Orders
-                                        join hi in myDb.OrderDetails on h.Id equals hi.OrderId
-                                        join his in myDb.Products on hi.ProductId equals his.Id
-                                        where (h.Completed == false && h.CustomerId == customerId)
-                                        select new
-                                        {
-                                           id = his.Id,
-                                           stockStatus = his.StockStatus,
-                                           quantity = hi.Quantity
-                                           
-                                        }).ToList();
-                            
-                            foreach (var status in stockStatus)
-                            {
-                                var quantityUpdate = (from q in myDb.Products
-                                                     where q.Id == status.id
-                                                     select q).SingleOrDefault();
-                                quantityUpdate.StockStatus -= status.quantity;
 
-                                myDb.Update(quantityUpdate);
-                                myDb.SaveChanges();
-                                                    
-                            }
+                        var completedOrder = GetOrderId(customerId);
 
-                            completedOrder.Completed = true;
-                            completedOrder.Delivery = deliveryChoice;
-                            completedOrder.Payment = paymentChoice;
 
-                            //myDb.Update(stockStatus);
-                            myDb.Update(completedOrder);
+
+                        var stockStatus = (
+                                    from h in myDb.Orders
+                                    join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                                    join his in myDb.Products on hi.ProductId equals his.Id
+                                    where (h.Completed == false && h.CustomerId == customerId)
+                                    select new
+                                    {
+                                        id = his.Id,
+                                        stockStatus = his.StockStatus,
+                                        quantity = hi.Quantity
+
+                                    }).ToList();
+
+                        foreach (var status in stockStatus)
+                        {
+                            var quantityUpdate = (from q in myDb.Products
+                                                  where q.Id == status.id
+                                                  select q).SingleOrDefault();
+                            quantityUpdate.StockStatus -= status.quantity;
+
+                            myDb.Update(quantityUpdate);
                             myDb.SaveChanges();
 
-                            Console.WriteLine("Thank you for your order!");
-                            Console.ReadLine();
-                            Console.Clear();
-                            View(customerId);
+                        }
 
+                        completedOrder.Completed = true;
+                        completedOrder.Delivery = deliveryChoice;
+                        completedOrder.Payment = paymentChoice;
 
+                        //myDb.Update(stockStatus);
+                        myDb.Update(completedOrder);
+                        myDb.SaveChanges();
 
+                        Console.WriteLine("Thank you for your order!");
+                        Console.ReadLine();
+                        Console.Clear();
+                        View(customerId);
 
-                        
-                        
-                        
                         break;
 
                     case '3':
                         Console.Clear();
-                        
+
                         var infoAcc = (from c in myDb.Customers where c.Id == customerId select c).SingleOrDefault();
-                        Console.WriteLine("Name : " + infoAcc.Name + "\nEmail : " + infoAcc.Email + "\nBirth date : " + infoAcc.BirthDate +"\nAddress : " + infoAcc.StreetName + ", " + infoAcc.PostalCode + ", " + infoAcc.City +".");
+                        Console.WriteLine("Name : " + infoAcc.Name + "\nEmail : " + infoAcc.Email + "\nBirth date : " + infoAcc.BirthDate + "\nAddress : " + infoAcc.StreetName + ", " + infoAcc.PostalCode + ", " + infoAcc.City + ".");
 
                         DrawHomeButton();
 
@@ -362,14 +365,14 @@ namespace GroupBWebshop
                         break;
 
                     case '4':
-                        Console.Clear();                       
+                        Console.Clear();
                         var history = (
                                         from h in myDb.Orders
                                         join hi in myDb.OrderDetails on h.Id equals hi.OrderId
                                         join his in myDb.Products on hi.ProductId equals his.Id
                                         where (h.Completed == true && h.CustomerId == customerId)
                                         select new
-                                        { 
+                                        {
                                             id = h.Id,
                                             name = his.Name,
                                             price = his.Price,
@@ -381,7 +384,7 @@ namespace GroupBWebshop
                         Console.WriteLine("Order history: ");
                         foreach (var h in history)
                         {
-                            
+
                             Console.WriteLine("Order Id: " + h.id + "\nProduct: " + h.name + "\nPrice: " + h.price + "\nQuantity: " + h.quantity + "\nPayment: " + h.payment + "\nDelivery: " + h.delivery);
                             Console.WriteLine();
                         }
@@ -402,7 +405,7 @@ namespace GroupBWebshop
                         var productSearch = (from h in myDb.Products where h.Name.Contains(search) || h.Info.Contains(search) || h.Size.Contains(search) || h.Material.Contains(search) select h);
                         foreach (var product in productSearch)
                         {
-                            Console.WriteLine(product.Name + " " + product.Info + " "+product.Size + " " + product.Price);
+                            Console.WriteLine(product.Name + " " + product.Info + " " + product.Size + " " + product.Price);
                             Console.WriteLine();
                         }
                         Console.WriteLine("Press enter to go back");
@@ -419,11 +422,7 @@ namespace GroupBWebshop
                         LoginOrAdmin();
                         break;
                 }
-
-
             }
-
-
         }
 
         public static double CartPrice(int customerId)
@@ -465,32 +464,32 @@ namespace GroupBWebshop
                 if (orderId == null)
                 {
 
-                    cart.Add("empty"); 
+                    cart.Add("empty");
                     return cart;
                 }
 
-               
+
                 var productsInCart = (from o in myDb.OrderDetails
-                                      where o.OrderId == orderId.Id 
+                                      where o.OrderId == orderId.Id
                                       select o.ProductId).ToList();
 
-               
-                    foreach (var product in productsInCart)
-                    {
-                        var quantityInCart = (from o in myDb.OrderDetails
-                                              where o.ProductId == product
-                                              && o.OrderId == orderId.Id
-                                              select o.Quantity).FirstOrDefault();
 
-                        var productInfo = (from p in myDb.Products
-                                           where p.Id == product
-                                           select p).SingleOrDefault();
-                        cart.Add(productInfo.Name + ", antal: " + quantityInCart + ", " + productInfo.Price + " SEK styck. Totalt: " + (quantityInCart * productInfo.Price) + " SEK");
-                    }
-                
-                
+                foreach (var product in productsInCart)
+                {
+                    var quantityInCart = (from o in myDb.OrderDetails
+                                          where o.ProductId == product
+                                          && o.OrderId == orderId.Id
+                                          select o.Quantity).FirstOrDefault();
 
-               
+                    var productInfo = (from p in myDb.Products
+                                       where p.Id == product
+                                       select p).SingleOrDefault();
+                    cart.Add(productInfo.Name + ", antal: " + quantityInCart + ", " + productInfo.Price + " SEK styck. Totalt: " + (quantityInCart * productInfo.Price) + " SEK");
+                }
+
+
+
+
             }
             return cart;
         }
@@ -536,14 +535,14 @@ namespace GroupBWebshop
         }
 
         public static void DrawHomeButton(int left = 50)
-        { 
-            List<string> list = new List<string>() {"Press 0!" };
+        {
+            List<string> list = new List<string>() { "Press 0!" };
             Window homeBox = new Window("Home", left, 1, list);
             homeBox.Draw();
-           
+
         }
 
-    
+
 
         public static void AddToCart(int id)
         {

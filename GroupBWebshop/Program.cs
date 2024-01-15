@@ -8,7 +8,7 @@ namespace GroupBWebshop
     {
         static void Main(string[] args)
         {
-            CustomerView.LoginOrAdmin();            
+            CustomerView.LoginOrAdmin();
         }
     }
 }
