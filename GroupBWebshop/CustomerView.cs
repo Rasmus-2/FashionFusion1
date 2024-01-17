@@ -120,7 +120,7 @@ namespace GroupBWebshop
                     where product.DisplayProduct
                     select product.Name;
                 //List<string> productsDisplay = new List<string>();
-                Window display = new Window("", 2, 5, productDisplay.ToList());
+                Window display = new Window("Favorites", 2, 5, productDisplay.ToList());
                 display.Draw();
 
                 var cart = CartView(customerId);
@@ -135,6 +135,7 @@ namespace GroupBWebshop
                 Console.WriteLine("4. View history");
                 Console.WriteLine("5. Search");
                 Console.WriteLine("6. Log out");
+                Console.WriteLine("7. View our favorites");
 
                 var key = Console.ReadKey();
 
@@ -420,6 +421,73 @@ namespace GroupBWebshop
                         Thread.Sleep(3000);
                         Console.Clear();
                         LoginOrAdmin();
+                        break;
+                    case '7':
+                        Console.Clear();
+                        DrawHomeButton(100);
+                        Console.SetCursorPosition(0, 0);
+                        foreach (var i in myDb.Products.Where(x=> x.DisplayProduct))
+                        {
+                            Console.WriteLine(i.Id + " " + i.Name + " " + i.Info + " " + i.Size + " " + i.Price + "SEK, " + i.StockStatus + " left in stock.");
+                        }
+                        Console.WriteLine("Choose product Id to add to cart: ");
+
+                        var idInput = int.Parse(Console.ReadLine());
+                        if (idInput != 0)
+                        {
+                            Console.WriteLine("Enter quantity");
+                            int quantity = int.Parse(Console.ReadLine());
+
+                            var existingOrder = GetOrderId(customerId);
+
+                            if (existingOrder == null)
+                            {
+                                myDb.Add(new Order { CustomerId = customerId, Completed = false });
+                                myDb.SaveChanges();
+                            }
+                            var getOrderId = GetOrderId(customerId);
+
+                            OrderDetails orderDetails = new OrderDetails() { OrderId = getOrderId.Id, ProductId = idInput, Quantity = quantity };
+                            myDb.Add(orderDetails);
+
+                            myDb.SaveChanges();
+
+
+                        }
+                        else if (idInput == 0)
+                        {
+                            View(customerId);
+                        }
+                        var stockStatus2 = (
+                                    from h in myDb.Orders
+                                    join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                                    join his in myDb.Products on hi.ProductId equals his.Id
+                                    where (h.Completed == false && h.CustomerId == customerId)
+                                    select new
+                                    {
+                                        id = his.Id,
+                                        stockStatus = his.StockStatus,
+                                        quantity = hi.Quantity
+
+                                    }).ToList();
+
+                        foreach (var status2 in stockStatus2)
+                        {
+                            var quantityUpdate = (from q in myDb.Products
+                                                  where q.Id == status2.id
+                                                  select q).SingleOrDefault();
+                            quantityUpdate.StockStatus -= status2.quantity;
+
+                            myDb.Update(quantityUpdate);
+                            myDb.SaveChanges();
+
+                        }
+
+                        AddToCart(idInput);
+                        myDb.SaveChanges();
+                        Console.Clear();
+                        View(customerId);
+                        
                         break;
                 }
             }

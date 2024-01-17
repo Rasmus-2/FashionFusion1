@@ -34,22 +34,32 @@ namespace GroupBWebshop
                     EditProduct();
                     break;
                 case '3':
-                    //DeleteProduct();
+                    Console.Clear();
+                    DeleteProduct();
                     break;
                 case '4':
-                    //AddCategory();
+                    Console.Clear();
+                    AddCategory();
                     break;
                 case '5':
-                    //DeleteCategory();
+                    Console.Clear();
+                    DeleteCategory();
                     break;
                 case '6':
-                    //EditCustomer();
+                    Console.Clear();
+                    EditCustomer();
                     break;
                 case '7':
-                    //DeleteCustomer();
+                    Console.Clear();
+                    DeleteCustomer();
                     break;
                 case '8':
-                    //LogOut();
+                    Console.Clear();
+                    Console.WriteLine("Thank you, see you soon!");
+                    Thread.Sleep(3000);
+                    Console.Clear();
+                    CustomerView.LoginOrAdmin();
+                    
                     break;
             }
         }
@@ -188,10 +198,11 @@ namespace GroupBWebshop
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
                 }
                 Console.WriteLine();
-
-                Console.WriteLine("Enter product Id: ");
-                int prodId = int.Parse(Console.ReadLine());
                 
+                Console.WriteLine("Enter product Id: ");
+                
+                int prodId = int.Parse(Console.ReadLine());
+               
                 var choosenEditProd = (from e in myDb.Products
                                        where e.Id == prodId
                                        select e).SingleOrDefault();
@@ -382,7 +393,293 @@ namespace GroupBWebshop
             }
         }
 
-        
+        public static void EditCustomer()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                Console.Clear();
+                foreach (var p in myDb.Customers)
+                {
+                    Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode+ " "+ p.City + " " + p.CountryId );
+                }
+                Console.WriteLine();
+
+                Console.WriteLine("Enter customer Id: ");
+
+                int customerId = int.Parse(Console.ReadLine());
+
+                var choosenEditCustomer = (from e in myDb.Customers
+                                       where e.Id == customerId
+                                       select e).SingleOrDefault();
+
+                Console.WriteLine("Press n to edit customer's name.");
+                Console.WriteLine("Press d to edit customer's email.");
+                Console.WriteLine("Press s to edit customer's phone number.");
+                Console.WriteLine("Press m to edit customer's birthdate.");
+                Console.WriteLine("Press l to edit customer's streetname.");
+                Console.WriteLine("Press p to edit customer's postal code.");
+                Console.WriteLine("Press i to edit customer's city.");
+                Console.WriteLine("Press t to edit customer's country.");                
+                Console.WriteLine("Press b to check customer's order history.");
+                CustomerView.DrawHomeButton();
+
+                var key = Console.ReadKey();
+
+                switch (key.KeyChar)
+                {
+                    case 'n':
+                        Console.Clear();
+                        Console.WriteLine("Enter new name: ");
+                        string newName = Console.ReadLine();
+
+                        choosenEditCustomer.Name = newName;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+
+                    case 'd':
+                        Console.Clear();
+                        Console.WriteLine("Enter new email: ");
+                        string newEmail = Console.ReadLine();
+
+                        choosenEditCustomer.Email = newEmail;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();                       
+                        break;
+
+                    case 's':
+                        Console.Clear();
+                        Console.WriteLine("Enter new phone number: " );
+                        Console.WriteLine("Example: +46123456910");
+                        string newPhone = Console.ReadLine();
+
+                        choosenEditCustomer.Phone = newPhone;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+                    case 'm':
+                        Console.Clear();
+                        Console.WriteLine("Enter new birthdate: ");
+                        Console.WriteLine("Example: yyyy-mm-dd");
+                        DateTime newBirthdate = DateTime.Parse(Console.ReadLine());
+
+                        choosenEditCustomer.BirthDate = newBirthdate;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+
+                    case 'l':
+                        Console.Clear();
+                        Console.WriteLine("Enter new streetname: ");
+                        Console.WriteLine("Example: Normalvägen 123 ");
+                        string newStreetname = Console.ReadLine();
+
+                        choosenEditCustomer.StreetName = newStreetname;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+
+                    case 'p':
+                        Console.Clear();
+                        Console.WriteLine("Enter new Postal Code: ");
+                        Console.WriteLine("Example: 633 60 ");
+                        string newPostalcode = Console.ReadLine();
+
+                        choosenEditCustomer.PostalCode = newPostalcode;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+
+                    case 'i':
+                        Console.Clear();
+                        Console.WriteLine("Enter new City: ");
+                        Console.WriteLine("Example: Eskilstuna ");
+                        string newCity = Console.ReadLine();
+
+                        choosenEditCustomer.City = newCity;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+                    case 't':
+                        Console.Clear();
+                        foreach(var country in myDb.Countries)
+                        {
+                            Console.WriteLine(country.Id + " " + country.Name);
+                        }
+                        Console.WriteLine("Enter new country Id: ");
+                        
+                        int newCountryId = int.Parse(Console.ReadLine());
+
+                        choosenEditCustomer.CountryId = newCountryId;
+
+                        myDb.Update(choosenEditCustomer);
+
+                        myDb.SaveChanges();
+
+                        EditCustomer();
+                        break;
+
+                    case 'b':
+                        Console.Clear();
+                        var history = (
+                                        from h in myDb.Orders
+                                        join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                                        join his in myDb.Products on hi.ProductId equals his.Id
+                                        where (h.Completed == true && h.CustomerId == customerId)
+                                        select new
+                                        {
+                                            id = h.Id,
+                                            name = his.Name,
+                                            price = his.Price,
+                                            quantity = hi.Quantity,
+                                            payment = h.Payment,
+                                            delivery = h.Delivery
+                                        });
+                        Console.WriteLine();
+                        Console.WriteLine("Order history: ");
+                        foreach (var h in history)
+                        {
+
+                            Console.WriteLine("Order Id: " + h.id + "\nProduct: " + h.name + "\nPrice: " + h.price + "\nQuantity: " + h.quantity + "\nPayment: " + h.payment + "\nDelivery: " + h.delivery);
+                            Console.WriteLine();
+                        }
+                        Console.WriteLine("Press Enter to Continue");
+                        Console.ReadLine();
+
+                        EditCustomer();
+
+                        break;
+
+                    default:
+                        Console.Clear();
+                        View();
+                        break;
+
+                }
+            }
+        }
+
+        public static void DeleteCustomer()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                foreach (var p in myDb.Customers)
+                {
+                    Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode + " " + p.City + " " + p.CountryId);
+                }
+                Console.WriteLine();
+
+                Console.WriteLine("Enter customer Id: ");
+
+                int deleteCustomer = int.Parse(Console.ReadLine());
+
+                
+
+                var choosenDeleteCustomer = (from e in myDb.Customers
+                                         where e.Id == deleteCustomer
+                                         select e).SingleOrDefault();
+
+                myDb.Customers.Remove(choosenDeleteCustomer);
+                myDb.SaveChanges();
+                Console.Clear();
+                View();
+
+            }
+        }
+        public static void DeleteCategory()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                foreach (var c in myDb.Categories)
+                {
+                    Console.WriteLine(c.Id + " " + c.Name);
+                }
+                Console.WriteLine("Enter category Id you wish to delete: ");
+
+                int deleteCat = int.Parse(Console.ReadLine());
+
+                var choosenDeleteCat = (from e in myDb.Categories
+                                         where e.Id == deleteCat
+                                         select e).SingleOrDefault();
+
+                myDb.Categories.Remove(choosenDeleteCat);
+                myDb.SaveChanges();
+                Console.Clear();
+                View();
+
+            }
+        }
+        public static void AddCategory()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                foreach ( var c in myDb.Categories)
+                {
+                    Console.WriteLine(c.Id + " " + c.Name);
+                }
+                Console.WriteLine("Enter category name: ");
+                string catName = Console.ReadLine();
+                Category category = new Category() { Name = catName};
+                myDb.Categories.Add(category);
+                myDb.SaveChanges();
+                Console.Clear();
+                View();
+            }
+        }
+        public static void DeleteProduct()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                foreach (var p in myDb.Products)
+                {
+                    Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
+                }
+                Console.WriteLine();
+
+                Console.WriteLine("Enter product Id: ");
+
+                int prodId = int.Parse(Console.ReadLine());
+
+                var choosenDeleteProd = (from e in myDb.Products
+                                       where e.Id == prodId
+                                       select e).SingleOrDefault();
+                
+                myDb.Products.Remove(choosenDeleteProd);
+                myDb.SaveChanges();
+                Console.Clear();
+                View();
+
+            }
+        }
         public static Product GetProduct(int id)
         {
             using (var myDb = new MyDbContext())
