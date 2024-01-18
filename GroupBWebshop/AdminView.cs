@@ -14,7 +14,6 @@ namespace GroupBWebshop
         {
             Console.WriteLine("1. Add product");
             Console.WriteLine("2. Edit product");
-            //FRÅGA MICKE! Går det att deleta product med tanke på foreign key i completed orders
             Console.WriteLine("3. Delete product");
             Console.WriteLine("4. Add category");
             Console.WriteLine("5. Delete category");
