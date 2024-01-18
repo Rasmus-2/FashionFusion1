@@ -130,13 +130,14 @@ namespace GroupBWebshop
                 box.Draw();
 
                 Console.WriteLine("What would you like to do today?");
-                Console.WriteLine("1. View products");
-                Console.WriteLine("2. View cart");
-                Console.WriteLine("3. View account information");
-                Console.WriteLine("4. View history");
-                Console.WriteLine("5. Search");
-                Console.WriteLine("6. Log out");
-                Console.WriteLine("7. View our favorites");
+                Console.WriteLine("1. View our favorites");
+                Console.WriteLine("2. View products");
+                Console.WriteLine("3. View cart");
+                Console.WriteLine("4. View account information");
+                Console.WriteLine("5. View history");
+                Console.WriteLine("6. Search");
+                Console.WriteLine("7. Log out");
+                
 
                 var key = Console.ReadKey();
 
@@ -144,82 +145,91 @@ namespace GroupBWebshop
                 {
                     case '1':
                         Console.Clear();
-                        ViewProductsCase(customerId);
+                        ViewFavoritesCase(customerId);
                         break;
 
                     case '2':
+                        Console.Clear();
+                        ViewProductsCase(customerId);
+                        break;
+
+                    case '3':
                         Console.Clear();
                         ViewCartCase(customerId);
                         break;
                         
 
-                    case '3':
+                    case '4':
                         Console.Clear();
                         ViewCustomerAccCase(customerId);
                         break;
 
-                    case '4':
+                    case '5':
                         Console.Clear();
                         ViewHistoryCase(customerId);
                         break;
 
-                    case '5':
+                    case '6':
                         Console.Clear();
                         SearchCase(customerId);
                         break;
 
-                    case '6':
+                    case '7':
                         Console.Clear();
                         Console.WriteLine("Thank you, see you soon!");
                         Thread.Sleep(3000);
                         Console.Clear();
                         LoginOrAdmin();
                         break;
-                    case '7':
-                        Console.Clear();
-                        DrawHomeButton(100);
-                        Console.SetCursorPosition(0, 0);
-                        foreach (var i in myDb.Products.Where(x=> x.DisplayProduct))
-                        {
-                            Console.WriteLine(i.Id + " " + i.Name + " " + i.Info + " " + i.Size + " " + i.Price + "SEK, " + i.StockStatus + " left in stock.");
-                        }
-                        Console.WriteLine("Choose product Id to add to cart: ");
-
-                        var idInput = int.Parse(Console.ReadLine());
-                        if (idInput != 0)
-                        {
-                            Console.WriteLine("Enter quantity");
-                            int quantity = int.Parse(Console.ReadLine());
-
-                            var existingOrder = GetOrderId(customerId);
-
-                            if (existingOrder == null)
-                            {
-                                myDb.Add(new Order { CustomerId = customerId, Completed = false });
-                                myDb.SaveChanges();
-                            }
-                            var getOrderId = GetOrderId(customerId);
-
-                            OrderDetails orderDetails = new OrderDetails() { OrderId = getOrderId.Id, ProductId = idInput, Quantity = quantity };
-                            myDb.Add(orderDetails);
-
-                            myDb.SaveChanges();
-
-
-                        }
-                        else if (idInput == 0)
-                        {
-                            View(customerId);
-                        }
-                        
-
-                        AddToCart(idInput);
-                        myDb.SaveChanges();
-                        Console.Clear();
-                        View(customerId);
-                        
-                        break;
+                   
                 }
+            }
+        }
+        public static void ViewFavoritesCase(int customerId)
+        { 
+            using (var myDb = new MyDbContext()) 
+            {
+                DrawHomeButton(100);
+                Console.SetCursorPosition(0, 0);
+                foreach (var i in myDb.Products.Where(x => x.DisplayProduct))
+                {
+                    Console.WriteLine(i.Id + " " + i.Name + " " + i.Info + " " + i.Size + " " + i.Price + "SEK, " + i.StockStatus + " left in stock.");
+                }
+                Console.WriteLine("Choose product Id to add to cart: ");
+
+                var idInput = int.Parse(Console.ReadLine());
+                if (idInput != 0)
+                {
+                    Console.WriteLine("Enter quantity");
+                    int quantity = int.Parse(Console.ReadLine());
+
+                    var existingOrder = GetOrderId(customerId);
+
+                    if (existingOrder == null)
+                    {
+                        myDb.Add(new Order { CustomerId = customerId, Completed = false });
+                        myDb.SaveChanges();
+                    }
+                    var getOrderId = GetOrderId(customerId);
+
+                    OrderDetails orderDetails = new OrderDetails() { OrderId = getOrderId.Id, ProductId = idInput, Quantity = quantity };
+                    myDb.Add(orderDetails);
+
+                    myDb.SaveChanges();
+
+
+                }
+                else if (idInput == 0)
+                {
+                    View(customerId);
+                }
+
+
+                AddToCart(idInput);
+                myDb.SaveChanges();
+                Console.Clear();
+                View(customerId);
+
             }
         }
         public static void SearchCase(int customerId)
@@ -232,7 +242,7 @@ namespace GroupBWebshop
                 var productSearch = (from h in myDb.Products where h.Name.Contains(search) || h.Info.Contains(search) || h.Size.Contains(search) || h.Material.Contains(search) select h);
                 foreach (var product in productSearch)
                 {
-                    Console.WriteLine(product.Name + " " + product.Info + " " + product.Size + " " + product.Price);
+                    Console.WriteLine(product.Name + " *" + product.Info + "* - " + product.Size + " " + product.Price + " SEK");
                     Console.WriteLine();
                 }
                 Console.WriteLine("Press enter to go back");
@@ -298,7 +308,7 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
-                Console.Clear();
+            
                 var finalCart = CartView(customerId);
                 var total = CartPrice(customerId);
                 finalCart.Add("");
@@ -526,7 +536,7 @@ namespace GroupBWebshop
                 bool quit = false;
                 while (quit == false)
                 {
-                    Console.Clear();
+                   
                     ViewAllProducts();
                     var inputId = int.Parse(Console.ReadLine());
                     if (inputId == 0)
