@@ -6,7 +6,8 @@ namespace GroupBWebshop.Models
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;database=FashionFusion;Trusted_connection=True;Trustservercertificate=True;");
+            //ändra "SQLEXPRESS" om det inte funkar
+            optionsBuilder.UseSqlServer("Server=.\\SQLExpress05;database=FashionFusion;Trusted_connection=True;Trustservercertificate=True;");
         }
 
         public DbSet<Models.Product> Products { get; set; }

@@ -17,9 +17,10 @@ namespace GroupBWebshop
             Console.WriteLine("3. Delete product");
             Console.WriteLine("4. Add category");
             Console.WriteLine("5. Delete category");
-            Console.WriteLine("6. Edit customer account");
-            Console.WriteLine("7. Delete customer account");
-            Console.WriteLine("8. Log out");
+            Console.WriteLine("6. View Statistics");
+            Console.WriteLine("7. Edit customer account");
+            Console.WriteLine("8. Delete customer account");
+            Console.WriteLine("9. Log out");
 
             ConsoleKeyInfo key = Console.ReadKey();
             switch (key.KeyChar)
@@ -46,13 +47,17 @@ namespace GroupBWebshop
                     break;
                 case '6':
                     Console.Clear();
-                    EditCustomer();
+                    CheckStats();
                     break;
                 case '7':
                     Console.Clear();
-                    DeleteCustomer();
+                    EditCustomer();
                     break;
                 case '8':
+                    Console.Clear();
+                    DeleteCustomer();
+                    break;
+                case '9':
                     Console.Clear();
                     Console.WriteLine("Thank you, see you soon!");
                     Thread.Sleep(3000);
@@ -63,6 +68,24 @@ namespace GroupBWebshop
             }
         }
 
+        public static void CheckStats()
+        {
+
+            //Best selling products
+            DatabaseDapper.BestSelling();
+
+            //Most popular category
+
+            //Most popular product mens/women
+
+            //Most popular product between ages 30-50
+
+            //Most orders per city
+
+            //Sales sorted by supplier
+
+
+        }
         public static void AddProduct()
         {
             using (var myDb = new MyDbContext())
