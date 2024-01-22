@@ -70,20 +70,44 @@ namespace GroupBWebshop
 
         public static void CheckStats()
         {
-
+            CustomerView.DrawHomeButton();
+            
             //Best selling products
             DatabaseDapper.BestSelling();
 
             //Most popular category
+            Console.WriteLine();
+            DatabaseDapper.MostPopularCategory();
 
             //Most popular product mens/women
+            Console.WriteLine();
+            DatabaseDapper.MostPopularInWomen();
 
-            //Most popular product between ages 30-50
+            //Most popular product between ages 40
+            Console.WriteLine();
+            DatabaseDapper.MostPopularForAbove40();
 
             //Most orders per city
+            Console.WriteLine();
+            DatabaseDapper.MostOrderPerCity();
 
             //Sales sorted by supplier
+            Console.WriteLine();
+            DatabaseDapper.TopSellerBySupplier();
 
+            var input = Console.ReadKey();
+
+            if (input.KeyChar == '0')
+            {
+                Console.Clear();
+                View();
+            }
+            else
+            {
+                Console.Clear();
+                CheckStats();
+            }
+            
 
         }
         public static void AddProduct()
@@ -155,11 +179,21 @@ namespace GroupBWebshop
                     product.Categories.Add(myDb.Categories.Where(x => x.Id == newCategory[i].Id).SingleOrDefault());
                 }
 
-                myDb.Add(product);
-                myDb.SaveChanges();
+                try
+                {
+                    myDb.Add(product); //possible try catch
+                    myDb.SaveChanges();//in the same curly bracket}
+
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Cannot add product.");
+                    Console.WriteLine(error.ToString());
+                    Thread.Sleep(5000);
+                }
+                Console.Clear();
+                View();
             }
-            Console.Clear();
-            View();
         }
 
         public static string EditMaterial()

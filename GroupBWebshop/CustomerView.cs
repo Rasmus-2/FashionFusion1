@@ -24,6 +24,7 @@ namespace GroupBWebshop
 
                 switch (input.KeyChar)
                 {
+
                     case 'a':
                         Console.WriteLine("Enter password:");
                         var pass = Console.ReadLine();
@@ -47,33 +48,8 @@ namespace GroupBWebshop
                             switch (key.KeyChar)
                             {
                                 case 'n':
-                                    Console.WriteLine("Enter name: ");
-                                    string name = Console.ReadLine();
-                                    Console.WriteLine("Enter email address:");
-                                    string email = Console.ReadLine();
-                                    Console.WriteLine("Enter phone number: ");
-                                    string phoneNumber = Console.ReadLine();
-                                    Console.WriteLine("Enter birth date: yyyy-mm-dd ");
-                                    DateTime birthDate = DateTime.Parse(Console.ReadLine());
-                                    Console.WriteLine("Enter street name: ");
-                                    string street = Console.ReadLine();
-                                    Console.WriteLine("Enter postal code: ");
-                                    string postal = Console.ReadLine();
-                                    Console.WriteLine("Enter city: ");
-                                    string city = Console.ReadLine();
-                                    Console.WriteLine("Enter country: ");
-                                    string country = Console.ReadLine();
-
-                                    var countryName = (from c in myDb.Countries where country == c.Name select c.Id).SingleOrDefault();
-                                    myDb.Add(new Customer { Name = name, Email = email, Phone = phoneNumber, BirthDate = birthDate, StreetName = street, PostalCode = postal, City = city, CountryId = countryName });
-                                    myDb.SaveChanges();
-
-                                    var loginId = (from l in myDb.Customers where l.Name == name select l.Id).SingleOrDefault();
-
-
                                     Console.Clear();
-                                    Console.WriteLine("Welcome " + name);
-                                    CustomerView.View(loginId);
+                                    CreateNewAccCustomer();
                                     break;
                                 case 'e':
                                     Console.WriteLine("Enter your name: ");
@@ -97,12 +73,63 @@ namespace GroupBWebshop
                         }
                         //CustomerView.View();
                         break;
+                      default:
+                        Console.Clear();
+                        LoginOrAdmin();
+                        break;
+
                 }
             }
         }
-        public static void View(int customerId)
+
+        public static void CreateNewAccCustomer()
         {
-            List<string> welcomeText = new List<string>() { "Welcome to Fashion Fushion", "The fashion for sustainable generation" };
+            using (var myDb = new MyDbContext())
+            {
+                Console.WriteLine("Enter name: ");
+                string name = Console.ReadLine();
+                Console.WriteLine("Enter email address:");
+                string email = Console.ReadLine();
+                Console.WriteLine("Enter phone number: ");
+                string phoneNumber = Console.ReadLine();
+                Console.WriteLine("Enter birth date: yyyy-mm-dd ");
+                DateTime birthDate = new DateTime();
+                try 
+                { 
+                    birthDate = DateTime.Parse(Console.ReadLine()); 
+                }
+                catch(Exception error) 
+                {
+                    Console.WriteLine("Invalid input!");
+                    Console.WriteLine(error.ToString());
+                    Thread.Sleep(7000);
+                    Console.Clear() ;
+                    CreateNewAccCustomer();
+                }
+                Console.WriteLine("Enter street name: ");
+                string street = Console.ReadLine();
+                Console.WriteLine("Enter postal code: ");
+                string postal = Console.ReadLine();
+                Console.WriteLine("Enter city: ");
+                string city = Console.ReadLine();
+                Console.WriteLine("Enter country: ");
+                string country = Console.ReadLine();
+
+                var countryName = (from c in myDb.Countries where country == c.Name select c.Id).SingleOrDefault();
+                myDb.Add(new Customer { Name = name, Email = email, Phone = phoneNumber, BirthDate = birthDate, StreetName = street, PostalCode = postal, City = city, CountryId = countryName });
+                myDb.SaveChanges();
+
+                var loginId = (from l in myDb.Customers where l.Name == name select l.Id).SingleOrDefault();
+
+
+                Console.Clear();
+                Console.WriteLine("Welcome " + name);
+                CustomerView.View(loginId);
+            }
+        }
+        public static async void View(int customerId)
+        {
+            List<string> welcomeText = new List<string>() { "Welcome to Fashion Fusion", "The fashion for sustainable generation" };
             Window text = new Window("", 5, 1, welcomeText);
             text.Draw();
 
@@ -132,6 +159,8 @@ namespace GroupBWebshop
                 Window box = new Window("Cart", 55, 1, cart);
                 box.Draw();
 
+                Task<List<Product>> getProduct = GetAllProducts();
+
                 Console.WriteLine("What would you like to do today?");
                 Console.WriteLine("1. View our favorites");
                 Console.WriteLine("2. View categories");
@@ -159,7 +188,8 @@ namespace GroupBWebshop
 
                     case '3':
                         Console.Clear();
-                        ViewProductsCase(customerId);
+                        List<Product> products = await getProduct;
+                        ViewProductsCase(customerId, products);
                         break;
 
                     case '4':
@@ -195,7 +225,7 @@ namespace GroupBWebshop
             }
         }
 
-        public static void ProductView(int customerId, int inputId, bool quit)
+        public static async void ProductView(int customerId, int inputId, bool quit)
         {
             using (var myDb = new MyDbContext())
             {
@@ -213,7 +243,8 @@ namespace GroupBWebshop
                 else if (getout.KeyChar == '2')
                 {
                     Console.Clear();
-                    ViewProductsCase(customerId);
+                    List<Product> products = await GetAllProducts();
+                    ViewProductsCase(customerId, products);
                 }
                 else if (getout.KeyChar == '1')
                 {
@@ -429,7 +460,7 @@ namespace GroupBWebshop
                 finalCart.Add("Total sum: " + total + " SEK");
                 Window cartBox = new Window("Your cart", 1, 1, finalCart);
                 cartBox.Draw();
-                DrawHomeButton(70);
+                //DrawHomeButton(70);
                 if (total == 0)
                 {
                     Thread.Sleep(4000);
@@ -650,7 +681,7 @@ namespace GroupBWebshop
             }
         }
 
-        public static void ViewProductsCase(int customerId)
+        public static void ViewProductsCase(int customerId, List<Product> products)
         {
             using (var myDb = new MyDbContext())
             {
@@ -658,7 +689,7 @@ namespace GroupBWebshop
                 while (quit == false)
                 {
                    
-                    ViewAllProducts();
+                    ViewAllProducts(products);
                     var inputId = int.Parse(Console.ReadLine());
                     if (inputId == 0)
                     {
@@ -715,6 +746,7 @@ namespace GroupBWebshop
 
         public static List<string> CartView(int customerId)
         {
+            DrawHomeButton(100);
             List<string> cart = new List<string>() { };
 
             using (var myDb = new MyDbContext())
@@ -776,6 +808,16 @@ namespace GroupBWebshop
             }
         }
 
+        public static async Task<List<Product>> GetAllProducts()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                var allProducts =  await myDb.Products.ToListAsync();
+                return allProducts;
+            }
+           
+        }
+
         public static void ViewProduct(int id)
         {
             using (var myDb = new MyDbContext())
@@ -783,16 +825,17 @@ namespace GroupBWebshop
                 var productChoosen = (from product in myDb.Products
                                       where product.Id == id
                                       select product).SingleOrDefault();
+               
                 Console.WriteLine(productChoosen.Name + ", *" + productChoosen.Info + "* " + productChoosen.Price + " SEK, " + productChoosen.Size);
             }
         }
-        public static void ViewAllProducts()
+        public static void ViewAllProducts(List<Product> products)
         {
-            using (var myDb = new MyDbContext())
-            {
+            
                 DrawHomeButton();
                 Console.SetCursorPosition(0, 0);
-                foreach (var p in myDb.Products)
+                
+                foreach (var p in products)
                 {
                     Console.WriteLine(p.Id + ". " + p.Name + " " + p.Price + " SEK");
 
@@ -805,7 +848,7 @@ namespace GroupBWebshop
                 
 
 
-            }
+            
         }
 
         public static void DrawHomeButton(int left = 50)
@@ -813,6 +856,7 @@ namespace GroupBWebshop
             List<string> list = new List<string>() { "Press 0!" };
             Window homeBox = new Window("Home", left, 1, list);
             homeBox.Draw();
+            Console.SetCursorPosition(0, 0);
 
         }
 
