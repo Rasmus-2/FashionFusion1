@@ -1,10 +1,4 @@
 ﻿using GroupBWebshop.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GroupBWebshop
 {
@@ -63,7 +57,7 @@ namespace GroupBWebshop
                     Thread.Sleep(3000);
                     Console.Clear();
                     CustomerView.LoginOrAdmin();
-                    
+
                     break;
             }
         }
@@ -71,7 +65,7 @@ namespace GroupBWebshop
         public static void CheckStats()
         {
             CustomerView.DrawHomeButton();
-            
+
             //Best selling products
             DatabaseDapper.BestSelling();
 
@@ -107,7 +101,7 @@ namespace GroupBWebshop
                 Console.Clear();
                 CheckStats();
             }
-            
+
 
         }
         public static void AddProduct()
@@ -139,20 +133,64 @@ namespace GroupBWebshop
 
 
                 ShowSuppliers();
-                int supplierId = int.Parse(Console.ReadLine());
+                //int supplierId = int.Parse(Console.ReadLine());
+                int supplierId = 0;
+                string inputSupplier = Console.ReadLine();
+                if (TryParseInt(inputSupplier) == true && int.Parse(inputSupplier) <= myDb.Suppliers.LongCount())
+                {
+                    supplierId = int.Parse(inputSupplier);
+                }
+                else
+                {
+                    InvalidInputAddProduct();
+                }
+
 
                 Console.WriteLine("Price: ");
-                float price = float.Parse(Console.ReadLine());
+
+                //float price = float.Parse(Console.ReadLine());
+                float price = 0;
+                string inputPrice = Console.ReadLine();
+                if (TryParseFloat(inputPrice) == true)
+                {
+                    price = float.Parse(inputPrice);
+                }
+                else
+                {
+                    InvalidInputAddProduct();
+                }
+
 
                 Console.WriteLine("Info text: ");
                 string info = Console.ReadLine();
 
                 Console.WriteLine("Stock status: ");
-                int stockStatus = int.Parse(Console.ReadLine());
+                //int stockStatus = int.Parse(Console.ReadLine());
+                int stockStatus = 0;
+                string inputStockStatus = Console.ReadLine();
+                if (TryParseInt(inputStockStatus) == true)
+                {
+                    stockStatus = int.Parse(inputStockStatus);
+                }
+                else
+                {
+                    InvalidInputAddProduct();
+                }
+
 
                 ShowCategories();
                 Console.WriteLine("How many categories? ");
-                int firstCat = int.Parse(Console.ReadLine());
+                //int firstCat = int.Parse(Console.ReadLine());
+                int firstCat = 0;
+                string firstCategory = Console.ReadLine();
+                if (TryParseInt(firstCategory) == true)
+                {
+                    firstCat = int.Parse(firstCategory);
+                }
+                else
+                {
+                    InvalidInputAddProduct();
+                }
 
 
                 List<Category> newCategory = CategoryInput(firstCat);
@@ -254,11 +292,25 @@ namespace GroupBWebshop
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
                 }
                 Console.WriteLine();
-                
+
                 Console.WriteLine("Enter product Id: ");
-                
-                int prodId = int.Parse(Console.ReadLine());
-               
+
+                int prodId = 0;
+                string inputString = Console.ReadLine();
+                if (TryParseInt(inputString) == true)
+                {
+                    prodId = int.Parse(inputString);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input! Try write a number.");
+                    Thread.Sleep(5000);
+                    Console.Clear();
+                    EditProduct();
+                }
+
+
+
                 var choosenEditProd = (from e in myDb.Products
                                        where e.Id == prodId
                                        select e).SingleOrDefault();
@@ -273,11 +325,11 @@ namespace GroupBWebshop
                 Console.WriteLine("Press t to edit product's stock status.");
                 Console.WriteLine("Press c to edit product's categories.");
                 CustomerView.DrawHomeButton();
-                
+
 
                 var key = Console.ReadKey();
 
-                switch(key.KeyChar) 
+                switch (key.KeyChar)
                 {
                     case 'n':
                         Console.Clear();
@@ -328,7 +380,7 @@ namespace GroupBWebshop
                             Console.Write(Enum.GetName(typeof(MyEnums.EnumSize), i) + " | ");
                         }
                         Console.WriteLine();
-                        
+
                         Console.WriteLine("Current product's size: " + choosenEditProd.Size);
                         Console.WriteLine("Enter new size: ");
                         string newSize = Console.ReadLine().ToUpper();
@@ -352,7 +404,19 @@ namespace GroupBWebshop
                         ShowSuppliers();
                         Console.WriteLine("Current product's supplier Id: " + choosenEditProd.SupplierId);
                         Console.WriteLine("Enter new supplier Id: ");
-                        int newSupplier = int.Parse(Console.ReadLine());
+                        int newSupplier = 0;
+                        string newSupplierString = Console.ReadLine();
+                        if (TryParseInt(newSupplierString) == true)
+                        {
+                            newSupplier = int.Parse(newSupplierString);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input! Try write a number. Wait to be redirected");
+                            Thread.Sleep(5000);
+                            Console.Clear();
+                            EditProduct();
+                        }
                         choosenEditProd.SupplierId = newSupplier;
                         myDb.Update(choosenEditProd);
                         myDb.SaveChanges();
@@ -363,7 +427,19 @@ namespace GroupBWebshop
                         Console.Clear();
                         Console.WriteLine("Current product's price: " + choosenEditProd.Price);
                         Console.WriteLine("Enter new price: ");
-                        float newPrice = float.Parse(Console.ReadLine());
+                        float newPrice = 0;
+                        string newPriceString = Console.ReadLine();
+                        if (TryParseFloat(newPriceString) == true)
+                        {
+                            newPrice = float.Parse(newPriceString);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input! Try write a number. Wait to be redirected");
+                            Thread.Sleep(5000);
+                            Console.Clear();
+                            EditProduct();
+                        }
                         choosenEditProd.Price = newPrice;
                         myDb.Update(choosenEditProd);
                         myDb.SaveChanges();
@@ -374,7 +450,7 @@ namespace GroupBWebshop
                         Console.Clear();
                         foreach (var p in myDb.Products)
                         {
-                            Console.WriteLine( p.Name + " " + p.Info);
+                            Console.WriteLine(p.Name + " " + p.Info);
                         }
                         Console.WriteLine();
                         Console.WriteLine("Current product's info: " + choosenEditProd.Info);
@@ -394,7 +470,19 @@ namespace GroupBWebshop
                         Console.WriteLine();
                         Console.WriteLine("Current product's stock status: " + choosenEditProd.StockStatus);
                         Console.WriteLine("Enter new stock: ");
-                        int newStock = int.Parse(Console.ReadLine());
+                        int newStock = 0;
+                        string newStockString = Console.ReadLine();
+                        if (TryParseInt(newStockString) == true)
+                        {
+                            newStock = int.Parse(newStockString);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input! Try write a number. Wait to be redirected");
+                            Thread.Sleep(5000);
+                            Console.Clear();
+                            EditProduct();
+                        }
                         choosenEditProd.StockStatus = newStock;
                         myDb.Update(choosenEditProd);
                         myDb.SaveChanges();
@@ -411,7 +499,7 @@ namespace GroupBWebshop
                         // Remove the associations between the product and categories
                         choosenEditProd.Categories.Clear();
 
-                        
+
                         //myDb.Categories.RemoveRange(choosenEditProd.Categories);
 
                         //var exCategory = myDb.Products.Where(x => x.Id == prodId && x.Categories != null);
@@ -421,16 +509,28 @@ namespace GroupBWebshop
 
 
                         Console.WriteLine("How many categories? ");
-                        int firstCat = int.Parse(Console.ReadLine());
+                        int firstCat = 0;
+                        string firstCatString = Console.ReadLine();
+                        if (TryParseInt(firstCatString) == true)
+                        {
+                            firstCat = int.Parse(firstCatString);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input! Try write a number. Wait to be redirected");
+                            Thread.Sleep(5000);
+                            Console.Clear();
+                            EditProduct();
+                        }
                         List<Category> newCategory = CategoryInput(firstCat);
 
                         choosenEditProd.Categories = new List<Category>();
-                        
+
                         for (int i = 0; i < firstCat; i++)
                         {
                             choosenEditProd.Categories.Add(myDb.Categories.Where(x => x.Id == newCategory[i].Id).SingleOrDefault());
                         }
-                        
+
 
                         myDb.Update(choosenEditProd);
                         myDb.SaveChanges();
@@ -444,7 +544,7 @@ namespace GroupBWebshop
 
                 }
 
-                
+
 
             }
         }
@@ -456,17 +556,40 @@ namespace GroupBWebshop
                 Console.Clear();
                 foreach (var p in myDb.Customers)
                 {
-                    Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode+ " "+ p.City + " " + p.CountryId );
+                    Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode + " " + p.City + " " + p.CountryId);
                 }
                 Console.WriteLine();
 
                 Console.WriteLine("Enter customer Id: ");
 
-                int customerId = int.Parse(Console.ReadLine());
+                int customerId = 0;
+                string customerIdString = Console.ReadLine();
+                if (TryParseInt(customerIdString) == true)
+                {
+                    if (int.Parse(customerIdString) <= myDb.Customers.LongCount())
+                    {
+                        customerId = int.Parse(customerIdString);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not a valid input! Try picking a number from the options.");
+                        Thread.Sleep(2000);
+                        Console.Clear();
+                        EditCustomer();
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input! Try write a number. Wait to be redirected");
+                    Thread.Sleep(2000);
+                    Console.Clear();
+                    EditCustomer();
+                }
 
                 var choosenEditCustomer = (from e in myDb.Customers
-                                       where e.Id == customerId
-                                       select e).SingleOrDefault();
+                                           where e.Id == customerId
+                                           select e).SingleOrDefault();
 
                 Console.WriteLine("Press n to edit customer's name.");
                 Console.WriteLine("Press d to edit customer's email.");
@@ -475,7 +598,7 @@ namespace GroupBWebshop
                 Console.WriteLine("Press l to edit customer's streetname.");
                 Console.WriteLine("Press p to edit customer's postal code.");
                 Console.WriteLine("Press i to edit customer's city.");
-                Console.WriteLine("Press t to edit customer's country.");                
+                Console.WriteLine("Press t to edit customer's country.");
                 Console.WriteLine("Press b to check customer's order history.");
                 CustomerView.DrawHomeButton();
 
@@ -508,12 +631,12 @@ namespace GroupBWebshop
 
                         myDb.SaveChanges();
 
-                        EditCustomer();                       
+                        EditCustomer();
                         break;
 
                     case 's':
                         Console.Clear();
-                        Console.WriteLine("Enter new phone number: " );
+                        Console.WriteLine("Enter new phone number: ");
                         Console.WriteLine("Example: +46123456910");
                         string newPhone = Console.ReadLine();
 
@@ -529,7 +652,20 @@ namespace GroupBWebshop
                         Console.Clear();
                         Console.WriteLine("Enter new birthdate: ");
                         Console.WriteLine("Example: yyyy-mm-dd");
-                        DateTime newBirthdate = DateTime.Parse(Console.ReadLine());
+                        DateTime newBirthdate;
+                        bool success = DateTime.TryParse(Console.ReadLine(), out DateTime result);
+                        if (success)
+                        {
+                            newBirthdate = result;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not a valid input! Try again.");
+                            Thread.Sleep(5000);
+                            Console.Clear();
+                            EditCustomer();
+                            newBirthdate = result;
+                        }
 
                         choosenEditCustomer.BirthDate = newBirthdate;
 
@@ -586,13 +722,25 @@ namespace GroupBWebshop
                         break;
                     case 't':
                         Console.Clear();
-                        foreach(var country in myDb.Countries)
+                        foreach (var country in myDb.Countries)
                         {
                             Console.WriteLine(country.Id + " " + country.Name);
                         }
                         Console.WriteLine("Enter new country Id: ");
-                        
-                        int newCountryId = int.Parse(Console.ReadLine());
+
+                        int newCountryId = 0;
+                        string newCountryIdString = Console.ReadLine();
+                        if (TryParseInt(newCountryIdString) == true && int.Parse(newCountryIdString) <= myDb.Customers.LongCount())
+                        {
+                            newCountryId = int.Parse(newCountryIdString);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not a valid input! Wait to be redirected.");
+                            Thread.Sleep(5000);
+                            Console.Clear();
+                            EditCustomer();
+                        }
 
                         choosenEditCustomer.CountryId = newCountryId;
 
@@ -655,13 +803,24 @@ namespace GroupBWebshop
 
                 Console.WriteLine("Enter customer Id: ");
 
-                int deleteCustomer = int.Parse(Console.ReadLine());
+                int deleteCustomer = 0;
+                string deleteCustomerString = Console.ReadLine();
+                if (TryParseInt(deleteCustomerString) == true && int.Parse(deleteCustomerString) <= myDb.Customers.LongCount())
+                {
+                    deleteCustomer = int.Parse(deleteCustomerString);
+                }
+                else
+                {
+                    Console.WriteLine("Not a valid input! Wait to be redirected.");
+                    Thread.Sleep(5000);
+                    Console.Clear();
+                    DeleteCustomer();
+                }
 
-                
 
                 var choosenDeleteCustomer = (from e in myDb.Customers
-                                         where e.Id == deleteCustomer
-                                         select e).SingleOrDefault();
+                                             where e.Id == deleteCustomer
+                                             select e).SingleOrDefault();
 
                 myDb.Customers.Remove(choosenDeleteCustomer);
                 myDb.SaveChanges();
@@ -680,11 +839,24 @@ namespace GroupBWebshop
                 }
                 Console.WriteLine("Enter category Id you wish to delete: ");
 
-                int deleteCat = int.Parse(Console.ReadLine());
+                //int deleteCat = int.Parse(Console.ReadLine());
+                int deleteCat = 0;
+                string deleteCatString = Console.ReadLine();
+                if (TryParseInt(deleteCatString) == true && int.Parse(deleteCatString) <= myDb.Categories.LongCount())
+                {
+                    deleteCat = int.Parse(deleteCatString);
+                }
+                else
+                {
+                    Console.WriteLine("Not a valid input! Wait to be redirected.");
+                    Thread.Sleep(5000);
+                    Console.Clear();
+                    DeleteCategory();
+                }
 
                 var choosenDeleteCat = (from e in myDb.Categories
-                                         where e.Id == deleteCat
-                                         select e).SingleOrDefault();
+                                        where e.Id == deleteCat
+                                        select e).SingleOrDefault();
 
                 myDb.Categories.Remove(choosenDeleteCat);
                 myDb.SaveChanges();
@@ -697,13 +869,13 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
-                foreach ( var c in myDb.Categories)
+                foreach (var c in myDb.Categories)
                 {
                     Console.WriteLine(c.Id + " " + c.Name);
                 }
                 Console.WriteLine("Enter category name: ");
                 string catName = Console.ReadLine();
-                Category category = new Category() { Name = catName};
+                Category category = new Category() { Name = catName };
                 myDb.Categories.Add(category);
                 myDb.SaveChanges();
                 Console.Clear();
@@ -723,12 +895,25 @@ namespace GroupBWebshop
 
                 Console.WriteLine("Enter product Id: ");
 
-                int prodId = int.Parse(Console.ReadLine());
+                //int prodId = int.Parse(Console.ReadLine());
+                int prodId = 0;
+                string prodIdString = Console.ReadLine();
+                if (TryParseInt(prodIdString) == true && int.Parse(prodIdString) <= myDb.Products.LongCount())
+                {
+                    prodId = int.Parse(prodIdString);
+                }
+                else
+                {
+                    Console.WriteLine("Not a valid input! Wait to be redirected.");
+                    Thread.Sleep(5000);
+                    Console.Clear();
+                    DeleteProduct();
+                }
 
                 var choosenDeleteProd = (from e in myDb.Products
-                                       where e.Id == prodId
-                                       select e).SingleOrDefault();
-                
+                                         where e.Id == prodId
+                                         select e).SingleOrDefault();
+
                 myDb.Products.Remove(choosenDeleteProd);
                 myDb.SaveChanges();
                 Console.Clear();
@@ -756,7 +941,19 @@ namespace GroupBWebshop
                 {
                     Console.WriteLine("Enter category " + (i + 1) + " Id: ");
 
-                    int catText = int.Parse(Console.ReadLine());
+                    //int catText = int.Parse(Console.ReadLine());
+                    int catText = 0;
+                    string catTextString = Console.ReadLine();
+                    if (TryParseInt(catTextString) == true && int.Parse(catTextString) <= myDb.Categories.LongCount())
+                    {
+                        catText = int.Parse(catTextString);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not a valid input! Wait to be redirected.");
+                        CategoryInput(numCategory);
+                    }
+
 
                     Category category = GetCategory(catText);
 
@@ -806,6 +1003,37 @@ namespace GroupBWebshop
                     Console.WriteLine("[" + supplier.Id + "] " + supplier.Name);
                 }
             }
+        }
+        public static bool TryParseInt(string input)
+        {
+            bool success = int.TryParse(input, out int number);
+
+            if (success)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryParseFloat(string input)
+        {
+            bool success = float.TryParse(input, out float number);
+
+            if (success)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static void InvalidInputAddProduct()
+        {
+            Console.WriteLine("Not a valid input! Wait to be redirected.");
+            Thread.Sleep(5000);
+            Console.Clear();
+            AddProduct();
         }
     }
 }
