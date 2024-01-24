@@ -1,17 +1,10 @@
 ﻿using GroupBWebshop.Models;
-using Microsoft.SqlServer.Server;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GroupBWebshop
 {
     internal class MockData
     {
-        public static void FakeFunction()
+        public static void GetTestData()
         {
             using (var myDb = new MyDbContext())
             {
@@ -35,7 +28,7 @@ namespace GroupBWebshop
 
                 var x = new List<Category> { forWomen, forNonbinary, sweaters };
 
-            Models.Product product1 = new Models.Product
+                Models.Product product1 = new Models.Product
                 { Categories = new List<Category> { forWomen, forNonbinary, sweaters }, Name = "Red christmas sweater", Material = Models.MyEnums.Material.Cashmere.ToString(), Size = Models.MyEnums.EnumSize.XS.ToString(), Info = "Beautiful sweater for christmas, only mild itching reported.", Price = 890, StockStatus = 22, SupplierId = 1, DisplayProduct = false };
                 Models.Product product2 = new Models.Product
                 { Categories = new List<Category> { forKids, forNonbinary, tshirt }, Name = "Urban disco T-Shirt", Material = Models.MyEnums.Material.Cotton.ToString(), Size = Models.MyEnums.EnumSize.M.ToString(), Info = "Latest trend on tiktok, comfortable fabric.", Price = 189, StockStatus = 13, SupplierId = 2, DisplayProduct = true };
@@ -57,9 +50,12 @@ namespace GroupBWebshop
                 { Categories = new List<Category> { forMen, forWomen, sweaters }, Name = "Lovely couple sweaters", Material = Models.MyEnums.Material.Wool.ToString(), Size = Models.MyEnums.EnumSize.S.ToString(), Info = "Good for couples.", Price = 299, StockStatus = 10, SupplierId = 1, DisplayProduct = false };
                 Models.Product product11 = new Models.Product
                 { Categories = new List<Category> { forKids, pants }, Name = "Red sweatpants", Material = Models.MyEnums.Material.Wool.ToString(), Size = Models.MyEnums.EnumSize.XS.ToString(), Info = "For days you don't want to go outside.", Price = 99, StockStatus = 78, SupplierId = 1, DisplayProduct = false };
+                Models.Product product12 = new Models.Product
+                { Categories = new List<Category> { forMen, forNonbinary, pants }, Name = "Camouflage joggers", Material = Models.MyEnums.Material.Cotton.ToString(), Size = Models.MyEnums.EnumSize.XL.ToString(), Info = "Trendy joggers for daily use.", Price = 399, StockStatus = 30, SupplierId = 2, DisplayProduct = true };
 
 
-                myDb.AddRange(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11);
+
+                myDb.AddRange(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11, product12);
 
                 myDb.AddRange(
                     new Country
@@ -123,6 +119,92 @@ namespace GroupBWebshop
                     }
 
                     );
+
+                Models.Order order1 = new Order()
+                {
+                    CustomerId = 1,
+                    Completed = true,
+                    Delivery = Models.MyEnums.DeliveryMethod.DHL.ToString(),
+                    Payment = Models.MyEnums.PaymentMethod.Klarna.ToString()
+                };
+
+                Models.Order order2 = new Order()
+                {
+                    CustomerId = 2,
+                    Completed = true,
+                    Delivery = Models.MyEnums.DeliveryMethod.Schenker.ToString(),
+                    Payment = Models.MyEnums.PaymentMethod.PayPal.ToString()
+                };
+                Models.Order order3 = new Order()
+                {
+                    CustomerId = 3,
+                    Completed = true,
+                    Delivery = Models.MyEnums.DeliveryMethod.Postnord.ToString(),
+                    Payment = Models.MyEnums.PaymentMethod.Credit_Card.ToString()
+                };
+                Models.Order order4 = new Order()
+                {
+                    CustomerId = 4,
+                    Completed = true,
+                    Delivery = Models.MyEnums.DeliveryMethod.Postnord.ToString(),
+                    Payment = Models.MyEnums.PaymentMethod.Credit_Card.ToString()
+                };
+
+
+
+
+                Models.OrderDetails details1 = new OrderDetails()
+                {
+                    OrderId = 1,
+                    ProductId = 1,
+                    Quantity = 6
+                };
+                Models.OrderDetails details2 = new OrderDetails()
+                {
+                    OrderId = 1,
+                    ProductId = 6,
+                    Quantity = 3
+                };
+                Models.OrderDetails details3 = new OrderDetails()
+                {
+                    OrderId = 2,
+                    ProductId = 3,
+                    Quantity = 4
+                };
+                Models.OrderDetails details4 = new OrderDetails()
+                {
+                    OrderId = 3,
+                    ProductId = 2,
+                    Quantity = 2
+                };
+                Models.OrderDetails details5 = new OrderDetails()
+                {
+                    OrderId = 3,
+                    ProductId = 8,
+                    Quantity = 10
+                };
+                Models.OrderDetails details6 = new OrderDetails()
+                {
+                    OrderId = 4,
+                    ProductId = 5,
+                    Quantity = 30
+                };
+                Models.OrderDetails details7 = new OrderDetails()
+                {
+                    OrderId = 4,
+                    ProductId = 9,
+                    Quantity = 6
+                };
+                Models.OrderDetails details8 = new OrderDetails()
+                {
+                    OrderId = 4,
+                    ProductId = 3,
+                    Quantity = 1
+                };
+
+                myDb.AddRange(order1, order2, order3, order4);
+                myDb.AddRange(details1, details2, details3, details4, details5, details6, details7, details8);
+
                 myDb.SaveChanges();
             }
         }

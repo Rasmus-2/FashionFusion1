@@ -1,6 +1,5 @@
 ﻿using GroupBWebshop.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 namespace GroupBWebshop
 {
@@ -16,7 +15,6 @@ namespace GroupBWebshop
 
                 switch (input.KeyChar)
                 {
-
                     case 'a':
                         Console.WriteLine("Enter password:");
                         var pass = Console.ReadLine();
@@ -28,15 +26,12 @@ namespace GroupBWebshop
                         }
                         AdminView.View();
                         break;
-
                     case 'c':
                         Console.Clear();
                         Console.WriteLine("New or Existing customer? n/e");
                         var key = Console.ReadKey(true);
                         using (var myDb = new MyDbContext())
                         {
-
-
                             switch (key.KeyChar)
                             {
                                 case 'n':
@@ -44,7 +39,6 @@ namespace GroupBWebshop
                                     CreateNewAccCustomer();
                                     break;
                                 case 'e':
-                                    //Task<List<Category>> getCategories = GetAllCategories();
                                     Console.WriteLine("Enter your name: ");
                                     string login = Console.ReadLine();
 
@@ -59,19 +53,15 @@ namespace GroupBWebshop
                                         Console.Clear();
                                         Console.WriteLine("Welcome back " + lo.Name!);
                                         CustomerView.View(lo.Id);
-                                        //List<Category> categories = await getCategories;
                                     }
-
                                     break;
                             }
                         }
-                        //CustomerView.View();
                         break;
                     default:
                         Console.Clear();
                         LoginOrAdmin();
                         break;
-
                 }
             }
         }
@@ -115,43 +105,20 @@ namespace GroupBWebshop
 
                 var loginId = (from l in myDb.Customers where l.Name == name select l.Id).SingleOrDefault();
 
-
                 Console.Clear();
                 Console.WriteLine("Welcome " + name);
                 CustomerView.View(loginId);
             }
         }
+        // Method View() takes in customerId to keep track on who is logged in
         public static async void View(int customerId)
         {
             List<string> welcomeText = new List<string>() { "Welcome to Fashion Fusion", "The fashion for sustainable generation" };
             Window text = new Window("", 5, 1, welcomeText);
             text.Draw();
 
-            //List<string> productDisplay = new List<string>() ;
-
-
-
-
-
             using (var myDb = new MyDbContext())
             {
-                Stopwatch s = new Stopwatch();
-                s.Start();
-                //Task<List<Category>> getCategories = GetAllCategories();
-                //Task<List<Product>> getFavourites = GetAllFavourites();
-                //List<Category> categories = await getCategories;
-                //List<Product> favourites = await getFavourites;
-                //List<string> categoryNames = new List<string>();
-                //foreach (Category c in categories)
-                //{
-                //    categoryNames.Add(c.Name);
-                //}
-                //List<string> favouriteNames = new List<string>();
-                //foreach (Product p in favourites)
-                //{
-                //    favouriteNames.Add(p.Name);
-                //}
-
                 var clothes = from category in myDb.Categories
                               select category.Name;
                 Window window = new Window("Category", 2, 10, clothes.ToList());
@@ -160,12 +127,11 @@ namespace GroupBWebshop
                     from product in myDb.Products
                     where product.DisplayProduct
                     select product.Name;
-                //List<string> productsDisplay = new List<string>();
+
                 Window display = new Window("Favorites", 2, 5, productDisplay.ToList());
                 display.Draw();
 
                 var cart = CartView(customerId);
-
 
                 Window box = new Window("Cart", 55, 1, cart);
                 box.Draw();
@@ -182,8 +148,6 @@ namespace GroupBWebshop
                 Console.WriteLine("7. Search");
                 Console.WriteLine("8. Log out");
 
-                s.Stop();
-                Console.WriteLine("Tid: " + s.ElapsedMilliseconds);
                 var key = Console.ReadKey();
 
                 switch (key.KeyChar)
@@ -192,39 +156,31 @@ namespace GroupBWebshop
                         Console.Clear();
                         ViewFavoritesCase(customerId);
                         break;
-
                     case '2':
                         Console.Clear();
                         ViewCategoryCase(customerId);
                         break;
-
                     case '3':
                         Console.Clear();
                         List<Product> products = await getProduct;
                         ViewProductsCase(customerId, products);
                         break;
-
                     case '4':
                         Console.Clear();
                         ViewCartCase(customerId);
                         break;
-
-
                     case '5':
                         Console.Clear();
                         ViewCustomerAccCase(customerId);
                         break;
-
                     case '6':
                         Console.Clear();
                         ViewHistoryCase(customerId);
                         break;
-
                     case '7':
                         Console.Clear();
                         SearchCase(customerId);
                         break;
-
                     case '8':
                         Console.Clear();
                         Console.WriteLine("Thank you, see you soon!");
@@ -232,7 +188,6 @@ namespace GroupBWebshop
                         Console.Clear();
                         LoginOrAdmin();
                         break;
-
                 }
             }
         }
@@ -250,7 +205,6 @@ namespace GroupBWebshop
                     quit = true;
                     Console.Clear();
                     View(customerId);
-
                 }
                 else if (getout.KeyChar == '2')
                 {
@@ -263,7 +217,6 @@ namespace GroupBWebshop
                     Console.WriteLine("Enter quantity");
                     int quantity = 0;
 
-
                     string quantityString = Console.ReadLine();
 
                     while (AdminView.TryParseInt(quantityString) != true)
@@ -271,7 +224,6 @@ namespace GroupBWebshop
                         quantityString = Console.ReadLine();
                         Console.WriteLine("Invalid input");
                         Thread.Sleep(2000);
-
                     }
                     quantity = int.Parse(quantityString);
 
@@ -291,15 +243,13 @@ namespace GroupBWebshop
 
                     Console.WriteLine("Your product was added to the cart");
 
-
-
                     Thread.Sleep(2000);
                     Console.Clear();
                     View(customerId);
-
                 }
             }
         }
+
         public static void ViewCategoryCase(int customerId)
         {
             using (var myDb = new MyDbContext())
@@ -313,6 +263,9 @@ namespace GroupBWebshop
                 Console.WriteLine("Choose category Id to check all products in that category");
                 int idInput = 0;
                 string idInputString = Console.ReadLine();
+
+                // Checking if its an int 
+                // Checking if its between 0 and maximum amount of categories
                 if (AdminView.TryParseInt(idInputString) && int.Parse(idInputString) <= myDb.Categories.LongCount() && int.Parse(idInputString) >= 0)
                 {
                     idInput = int.Parse(idInputString);
@@ -334,8 +287,6 @@ namespace GroupBWebshop
                 {
                     ViewProductInCategory(customerId, idInput);
                 }
-
-
             }
         }
 
@@ -380,6 +331,7 @@ namespace GroupBWebshop
                 }
             }
         }
+
         public static void ViewFavoritesCase(int customerId)
         {
             using (var myDb = new MyDbContext())
@@ -405,6 +357,7 @@ namespace GroupBWebshop
                     Console.Clear();
                     ViewFavoritesCase(customerId);
                 }
+
                 if (idInput != 0)
                 {
                     Console.WriteLine("Enter quantity");
@@ -435,22 +388,20 @@ namespace GroupBWebshop
                     myDb.Add(orderDetails);
 
                     myDb.SaveChanges();
-
-
                 }
                 else if (idInput == 0)
                 {
+                    Console.Clear();
                     View(customerId);
                 }
-
 
                 AddToCart(idInput);
                 myDb.SaveChanges();
                 Console.Clear();
                 View(customerId);
-
             }
         }
+
         public static void SearchCase(int customerId)
         {
             using (var myDb = new MyDbContext())
@@ -470,24 +421,24 @@ namespace GroupBWebshop
                 View(customerId);
             }
         }
+
         public static void ViewHistoryCase(int customerId)
         {
             using (var myDb = new MyDbContext())
             {
-                var history = (
-                                        from h in myDb.Orders
-                                        join hi in myDb.OrderDetails on h.Id equals hi.OrderId
-                                        join his in myDb.Products on hi.ProductId equals his.Id
-                                        where (h.Completed == true && h.CustomerId == customerId)
-                                        select new
-                                        {
-                                            id = h.Id,
-                                            name = his.Name,
-                                            price = his.Price,
-                                            quantity = hi.Quantity,
-                                            payment = h.Payment,
-                                            delivery = h.Delivery
-                                        });
+                var history = (from h in myDb.Orders
+                               join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                               join his in myDb.Products on hi.ProductId equals his.Id
+                               where (h.Completed == true && h.CustomerId == customerId)
+                               select new
+                               {
+                                   id = h.Id,
+                                   name = his.Name,
+                                   price = his.Price,
+                                   quantity = hi.Quantity,
+                                   payment = h.Payment,
+                                   delivery = h.Delivery
+                               });
                 Console.WriteLine();
                 Console.WriteLine("Order history: ");
                 foreach (var h in history)
@@ -514,7 +465,6 @@ namespace GroupBWebshop
                 var infoAcc = (from c in myDb.Customers where c.Id == customerId select c).SingleOrDefault();
                 Console.WriteLine("Name : " + infoAcc.Name + "\nEmail : " + infoAcc.Email + "\nBirth date : " + infoAcc.BirthDate + "\nAddress : " + infoAcc.StreetName + ", " + infoAcc.PostalCode + ", " + infoAcc.City + ".");
 
-
                 var zero = Console.ReadKey(true);
                 while (zero.KeyChar != '0')
                 {
@@ -524,23 +474,21 @@ namespace GroupBWebshop
                 View(customerId);
             }
         }
+
         public static void ViewCartCase(int customerId)
         {
             using (var myDb = new MyDbContext())
             {
-
                 var finalCart = CartView(customerId);
                 var total = CartPrice(customerId);
                 finalCart.Add("");
                 finalCart.Add("Total sum: " + total + " SEK");
                 Window cartBox = new Window("Your cart", 1, 1, finalCart);
                 cartBox.Draw();
-                //DrawHomeButton(70);
                 if (total == 0)
                 {
                     Thread.Sleep(4000);
                     Console.Clear();
-
                     View(customerId);
                 }
                 else
@@ -555,7 +503,6 @@ namespace GroupBWebshop
                         switch (keyInput.KeyChar)
                         {
                             case 'r':
-
                                 Console.WriteLine("Enter product's Id that you wish to remove: ");
                                 int removeProdId = 0;
                                 string removeProdIdString = Console.ReadLine();
@@ -596,7 +543,6 @@ namespace GroupBWebshop
                                     ViewCartCase(customerId);
                                 }
 
-
                                 var removeFromCart = (from o in myDb.OrderDetails
                                                       where o.ProductId == removeProdId
                                                       select o).SingleOrDefault();
@@ -615,7 +561,6 @@ namespace GroupBWebshop
                                 Console.Clear();
                                 View(customerId);
                                 break;
-
                             case 'a':
                                 Console.WriteLine("Enter product's Id that you wish to add: ");
                                 int addProdId = 0;
@@ -680,7 +625,6 @@ namespace GroupBWebshop
                                 Console.Clear();
                                 ViewCartCase(customerId);
                                 break;
-
                         }
                     }
                     else if (answer.KeyChar == '0')
@@ -692,6 +636,7 @@ namespace GroupBWebshop
                     {
                         Console.WriteLine("Choose delivery method: ");
 
+                        // Outputs a list of possible deliverymethods
                         foreach (int i in Enum.GetValues(typeof(MyEnums.DeliveryMethod)))
                         {
                             Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.DeliveryMethod), i).Replace('_', ' '));
@@ -703,42 +648,32 @@ namespace GroupBWebshop
                         {
                             MyEnums.DeliveryMethod selection1 = (MyEnums.DeliveryMethod)number1;
 
-
+                            // A switch where you can choose deliverymethod
                             switch (selection1)
                             {
                                 case MyEnums.DeliveryMethod.DHL:
                                     deliveryChoice = MyEnums.DeliveryMethod.DHL.ToString();
                                     Console.WriteLine("You choose DHL!");
                                     break;
-
                                 case MyEnums.DeliveryMethod.Postnord:
                                     deliveryChoice = MyEnums.DeliveryMethod.Postnord.ToString();
                                     Console.WriteLine("You choose Postnord!");
                                     break;
-
                                 case MyEnums.DeliveryMethod.Schenker:
                                     deliveryChoice = MyEnums.DeliveryMethod.Schenker.ToString();
                                     Console.WriteLine("You choose Schenker!");
                                     break;
-
-
                                 default:
                                     Console.Clear();
                                     View(customerId);
                                     break;
                             }
-
                         }
                         else
                         {
                             Console.Clear();
                             View(customerId);
                         }
-
-
-
-
-
 
                         Console.Clear();
                         DrawHomeButton(70);
@@ -754,24 +689,20 @@ namespace GroupBWebshop
                         {
                             MyEnums.PaymentMethod selection = (MyEnums.PaymentMethod)number;
 
-
                             switch (selection)
                             {
                                 case MyEnums.PaymentMethod.Klarna:
                                     paymentChoice = MyEnums.PaymentMethod.Klarna.ToString();
                                     Console.WriteLine("You choose Klarna!");
                                     break;
-
                                 case MyEnums.PaymentMethod.Credit_Card:
                                     paymentChoice = MyEnums.PaymentMethod.Credit_Card.ToString();
                                     Console.WriteLine("You choose Credit Card!");
                                     break;
-
                                 case MyEnums.PaymentMethod.PayPal:
                                     paymentChoice = MyEnums.PaymentMethod.PayPal.ToString();
                                     Console.WriteLine("You choose PayPal!");
                                     break;
-
                                 case MyEnums.PaymentMethod.Swish:
                                     paymentChoice = MyEnums.PaymentMethod.Swish.ToString();
                                     Console.WriteLine("You choose Swish!");
@@ -781,31 +712,24 @@ namespace GroupBWebshop
                                     View(customerId);
                                     break;
                             }
-
                         }
                         else
                         {
                             Console.WriteLine("Invalid input");
                         }
 
-
-
                         var completedOrder = GetOrderId(customerId);
 
-
-
-                        var stockStatus = (
-                                    from h in myDb.Orders
-                                    join hi in myDb.OrderDetails on h.Id equals hi.OrderId
-                                    join his in myDb.Products on hi.ProductId equals his.Id
-                                    where (h.Completed == false && h.CustomerId == customerId)
-                                    select new
-                                    {
-                                        id = his.Id,
-                                        stockStatus = his.StockStatus,
-                                        quantity = hi.Quantity
-
-                                    }).ToList();
+                        var stockStatus = (from h in myDb.Orders
+                                           join hi in myDb.OrderDetails on h.Id equals hi.OrderId
+                                           join his in myDb.Products on hi.ProductId equals his.Id
+                                           where (h.Completed == false && h.CustomerId == customerId)
+                                           select new
+                                           {
+                                               id = his.Id,
+                                               stockStatus = his.StockStatus,
+                                               quantity = hi.Quantity
+                                           }).ToList();
 
                         foreach (var status in stockStatus)
                         {
@@ -816,14 +740,12 @@ namespace GroupBWebshop
 
                             myDb.Update(quantityUpdate);
                             myDb.SaveChanges();
-
                         }
 
                         completedOrder.Completed = true;
                         completedOrder.Delivery = deliveryChoice;
                         completedOrder.Payment = paymentChoice;
 
-                        //myDb.Update(stockStatus);
                         myDb.Update(completedOrder);
                         myDb.SaveChanges();
 
@@ -843,7 +765,6 @@ namespace GroupBWebshop
                 bool quit = false;
                 while (quit == false)
                 {
-
                     ViewAllProducts(products);
                     var inputId = 0;
                     string inputIdString = Console.ReadLine();
@@ -868,7 +789,6 @@ namespace GroupBWebshop
                     }
                     ViewProduct(inputId, customerId);
                     ProductView(customerId, inputId, quit);
-
                 }
             }
         }
@@ -906,12 +826,7 @@ namespace GroupBWebshop
                 {
                     return 0;
                 }
-
-
             }
-
-
-
         }
 
         public static List<string> CartView(int customerId)
@@ -929,7 +844,6 @@ namespace GroupBWebshop
 
                 if (orderId == null)
                 {
-
                     cart.Add("empty");
                     return cart;
                 }
@@ -939,13 +853,9 @@ namespace GroupBWebshop
                     return cart;
                 }
 
-
-
-
                 var productsInCart = (from o in myDb.OrderDetails
                                       where o.OrderId == orderId.Id
                                       select o.ProductId).ToList();
-
 
                 foreach (var product in productsInCart)
                 {
@@ -959,10 +869,6 @@ namespace GroupBWebshop
                                        select p).SingleOrDefault();
                     cart.Add(productInfo.Id + ". " + productInfo.Name + ", antal: " + quantityInCart + ", " + productInfo.Price + " SEK per product. Totalt: " + (quantityInCart * productInfo.Price) + " SEK");
                 }
-
-
-
-
             }
             return cart;
         }
@@ -985,23 +891,6 @@ namespace GroupBWebshop
                 var allProducts = await myDb.Products.ToListAsync();
                 return allProducts;
             }
-
-        }
-        public static async Task<List<Category>> GetAllCategories()
-        {
-            using (var myDb = new MyDbContext())
-            {
-                var allCategories = await myDb.Categories.ToListAsync();
-                return allCategories;
-            }
-        }
-        public static async Task<List<Product>> GetAllFavourites()
-        {
-            using (var myDb = new MyDbContext())
-            {
-                var allFavourites = await myDb.Products.Where(x => x.DisplayProduct == true).ToListAsync();
-                return allFavourites;
-            }
         }
 
         public static void ViewProduct(int id, int customerId)
@@ -1022,9 +911,9 @@ namespace GroupBWebshop
                 Console.WriteLine(productChoosen.Name + ", *" + productChoosen.Info + "* " + productChoosen.Price + " SEK, " + productChoosen.Size);
             }
         }
+
         public static void ViewAllProducts(List<Product> products)
         {
-
             DrawHomeButton();
             Console.SetCursorPosition(0, 0);
 
@@ -1037,11 +926,6 @@ namespace GroupBWebshop
 
             Console.WriteLine("View product's info");
             Console.WriteLine("Enter product's Id: ");
-
-
-
-
-
         }
 
         public static void DrawHomeButton(int left = 50)
@@ -1050,16 +934,12 @@ namespace GroupBWebshop
             Window homeBox = new Window("Home", left, 1, list);
             homeBox.Draw();
             Console.SetCursorPosition(0, 0);
-
         }
-
-
 
         public static void AddToCart(int id)
         {
             using (var myDb = new MyDbContext())
             {
-
                 var productChoosen = (from product in myDb.Products
                                       where product.Id == id
                                       select product).SingleOrDefault();
@@ -1067,6 +947,7 @@ namespace GroupBWebshop
             }
             Console.WriteLine("Order placed!");
         }
+
         public static List<int> GetCartIds(int customerId)
         {
             using (var myDb = new MyDbContext())

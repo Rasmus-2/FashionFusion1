@@ -1,13 +1,10 @@
-﻿using GroupBWebshop.Models;
-using System;
-using System.Security.Cryptography;
-
-namespace GroupBWebshop
+﻿namespace GroupBWebshop
 {
     internal class Program
     {
         static void Main(string[] args)
         {
+            // LOCAL DATABASE
             CustomerView.LoginOrAdmin();
         }
     }

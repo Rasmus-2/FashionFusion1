@@ -57,7 +57,6 @@ namespace GroupBWebshop
                     Thread.Sleep(3000);
                     Console.Clear();
                     CustomerView.LoginOrAdmin();
-
                     break;
             }
         }
@@ -73,7 +72,7 @@ namespace GroupBWebshop
             Console.WriteLine();
             DatabaseDapper.MostPopularCategory();
 
-            //Most popular product mens/women
+            //Most popular product women
             Console.WriteLine();
             DatabaseDapper.MostPopularInWomen();
 
@@ -101,14 +100,12 @@ namespace GroupBWebshop
                 Console.Clear();
                 CheckStats();
             }
-
-
         }
+
         public static void AddProduct()
         {
             using (var myDb = new MyDbContext())
             {
-
                 Console.WriteLine("Name: ");
                 string name = Console.ReadLine();
                 Console.WriteLine("Display product? yes/no");
@@ -128,12 +125,10 @@ namespace GroupBWebshop
                 Console.WriteLine();
                 string size = Console.ReadLine().ToUpper();
 
-
                 string materialChoice = EditMaterial();
 
-
                 ShowSuppliers();
-                //int supplierId = int.Parse(Console.ReadLine());
+
                 int supplierId = 0;
                 string inputSupplier = Console.ReadLine();
                 if (TryParseInt(inputSupplier) == true && int.Parse(inputSupplier) <= myDb.Suppliers.LongCount())
@@ -145,10 +140,8 @@ namespace GroupBWebshop
                     InvalidInputAddProduct();
                 }
 
-
                 Console.WriteLine("Price: ");
 
-                //float price = float.Parse(Console.ReadLine());
                 float price = 0;
                 string inputPrice = Console.ReadLine();
                 if (TryParseFloat(inputPrice) == true)
@@ -160,12 +153,10 @@ namespace GroupBWebshop
                     InvalidInputAddProduct();
                 }
 
-
                 Console.WriteLine("Info text: ");
                 string info = Console.ReadLine();
 
                 Console.WriteLine("Stock status: ");
-                //int stockStatus = int.Parse(Console.ReadLine());
                 int stockStatus = 0;
                 string inputStockStatus = Console.ReadLine();
                 if (TryParseInt(inputStockStatus) == true)
@@ -177,10 +168,8 @@ namespace GroupBWebshop
                     InvalidInputAddProduct();
                 }
 
-
                 ShowCategories();
                 Console.WriteLine("How many categories? ");
-                //int firstCat = int.Parse(Console.ReadLine());
                 int firstCat = 0;
                 string firstCategory = Console.ReadLine();
                 if (TryParseInt(firstCategory) == true)
@@ -191,7 +180,6 @@ namespace GroupBWebshop
                 {
                     InvalidInputAddProduct();
                 }
-
 
                 List<Category> newCategory = CategoryInput(firstCat);
                 foreach (Category category in newCategory)
@@ -219,8 +207,8 @@ namespace GroupBWebshop
 
                 try
                 {
-                    myDb.Add(product); //possible try catch
-                    myDb.SaveChanges();//in the same curly bracket}
+                    myDb.Add(product);
+                    myDb.SaveChanges();
 
                 }
                 catch (Exception error)
@@ -249,35 +237,28 @@ namespace GroupBWebshop
             {
                 MyEnums.Material selection1 = (MyEnums.Material)number1;
 
-
                 switch (selection1)
                 {
                     case MyEnums.Material.Cotton:
                         materialChoice = MyEnums.Material.Cotton.ToString();
                         break;
-
                     case MyEnums.Material.Polyester:
                         materialChoice = MyEnums.Material.Polyester.ToString();
                         break;
-
                     case MyEnums.Material.Wool:
                         materialChoice = MyEnums.Material.Wool.ToString();
                         break;
-
                     case MyEnums.Material.Cashmere:
                         materialChoice = MyEnums.Material.Cashmere.ToString();
                         break;
-
                     case MyEnums.Material.Leather:
                         materialChoice = MyEnums.Material.Leather.ToString();
                         break;
-
                     default:
                         Console.Clear();
                         View();
                         break;
                 }
-
             }
             return materialChoice;
         }
@@ -286,7 +267,6 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
-
                 foreach (var p in myDb.Products)
                 {
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
@@ -309,8 +289,6 @@ namespace GroupBWebshop
                     EditProduct();
                 }
 
-
-
                 var choosenEditProd = (from e in myDb.Products
                                        where e.Id == prodId
                                        select e).SingleOrDefault();
@@ -326,7 +304,6 @@ namespace GroupBWebshop
                 Console.WriteLine("Press c to edit product's categories.");
                 CustomerView.DrawHomeButton();
 
-
                 var key = Console.ReadKey();
 
                 switch (key.KeyChar)
@@ -339,16 +316,12 @@ namespace GroupBWebshop
                         choosenEditProd.Name = newName;
 
                         myDb.Update(choosenEditProd);
-
                         myDb.SaveChanges();
-
                         EditProduct();
                         break;
-
                     case 'd':
                         Console.Clear();
                         Console.WriteLine("Is this product on display? " + choosenEditProd.DisplayProduct);
-
                         Console.WriteLine("Display product? y/n");
                         var key1 = Console.ReadKey();
                         if (key1.KeyChar == 'y')
@@ -363,15 +336,12 @@ namespace GroupBWebshop
                         else
                         {
                             Console.WriteLine("Invalid input");
-
                         }
 
                         myDb.Update(choosenEditProd);
                         myDb.SaveChanges();
-
                         EditProduct();
                         break;
-
                     case 's':
                         Console.Clear();
                         Console.Write("Size: | ");
@@ -389,7 +359,6 @@ namespace GroupBWebshop
                         myDb.SaveChanges();
                         EditProduct();
                         break;
-
                     case 'm':
                         Console.Clear();
                         string newMaterial = EditMaterial();
@@ -398,7 +367,6 @@ namespace GroupBWebshop
                         myDb.SaveChanges();
                         EditProduct();
                         break;
-
                     case 'l':
                         Console.Clear();
                         ShowSuppliers();
@@ -422,7 +390,6 @@ namespace GroupBWebshop
                         myDb.SaveChanges();
                         EditProduct();
                         break;
-
                     case 'p':
                         Console.Clear();
                         Console.WriteLine("Current product's price: " + choosenEditProd.Price);
@@ -445,7 +412,6 @@ namespace GroupBWebshop
                         myDb.SaveChanges();
                         EditProduct();
                         break;
-
                     case 'i':
                         Console.Clear();
                         foreach (var p in myDb.Products)
@@ -488,25 +454,14 @@ namespace GroupBWebshop
                         myDb.SaveChanges();
                         EditProduct();
                         break;
-
                     case 'c':
                         Console.Clear();
                         ShowCategories();
-
                         // Assuming choosenEditProd is a tracked entity
                         myDb.Entry(choosenEditProd).Collection(p => p.Categories).Load();
 
                         // Remove the associations between the product and categories
                         choosenEditProd.Categories.Clear();
-
-
-                        //myDb.Categories.RemoveRange(choosenEditProd.Categories);
-
-                        //var exCategory = myDb.Products.Where(x => x.Id == prodId && x.Categories != null);
-                        //choosenEditProd.Categories.Remove(exCategory);
-
-                        //choosenEditProd.Categories.Remove(myDb.Categories.Where(x => x.Id == choosenEditProd.Id).SingleOrDefault());
-
 
                         Console.WriteLine("How many categories? ");
                         int firstCat = 0;
@@ -531,21 +486,15 @@ namespace GroupBWebshop
                             choosenEditProd.Categories.Add(myDb.Categories.Where(x => x.Id == newCategory[i].Id).SingleOrDefault());
                         }
 
-
                         myDb.Update(choosenEditProd);
                         myDb.SaveChanges();
                         EditProduct();
                         break;
-
                     default:
                         Console.Clear();
                         View();
                         break;
-
                 }
-
-
-
             }
         }
 
@@ -559,7 +508,6 @@ namespace GroupBWebshop
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode + " " + p.City + " " + p.CountryId);
                 }
                 Console.WriteLine();
-
                 Console.WriteLine("Enter customer Id: ");
 
                 int customerId = 0;
@@ -577,7 +525,6 @@ namespace GroupBWebshop
                         Console.Clear();
                         EditCustomer();
                     }
-
                 }
                 else
                 {
@@ -610,16 +557,12 @@ namespace GroupBWebshop
                         Console.Clear();
                         Console.WriteLine("Enter new name: ");
                         string newName = Console.ReadLine();
-
                         choosenEditCustomer.Name = newName;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
-
                     case 'd':
                         Console.Clear();
                         Console.WriteLine("Enter new email: ");
@@ -628,12 +571,9 @@ namespace GroupBWebshop
                         choosenEditCustomer.Email = newEmail;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
-
                     case 's':
                         Console.Clear();
                         Console.WriteLine("Enter new phone number: ");
@@ -643,9 +583,7 @@ namespace GroupBWebshop
                         choosenEditCustomer.Phone = newPhone;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
                     case 'm':
@@ -670,12 +608,9 @@ namespace GroupBWebshop
                         choosenEditCustomer.BirthDate = newBirthdate;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
-
                     case 'l':
                         Console.Clear();
                         Console.WriteLine("Enter new streetname: ");
@@ -685,12 +620,9 @@ namespace GroupBWebshop
                         choosenEditCustomer.StreetName = newStreetname;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
-
                     case 'p':
                         Console.Clear();
                         Console.WriteLine("Enter new Postal Code: ");
@@ -700,12 +632,9 @@ namespace GroupBWebshop
                         choosenEditCustomer.PostalCode = newPostalcode;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
-
                     case 'i':
                         Console.Clear();
                         Console.WriteLine("Enter new City: ");
@@ -715,9 +644,7 @@ namespace GroupBWebshop
                         choosenEditCustomer.City = newCity;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
                     case 't':
@@ -745,33 +672,28 @@ namespace GroupBWebshop
                         choosenEditCustomer.CountryId = newCountryId;
 
                         myDb.Update(choosenEditCustomer);
-
                         myDb.SaveChanges();
-
                         EditCustomer();
                         break;
-
                     case 'b':
                         Console.Clear();
-                        var history = (
-                                        from h in myDb.Orders
-                                        join hi in myDb.OrderDetails on h.Id equals hi.OrderId
-                                        join his in myDb.Products on hi.ProductId equals his.Id
-                                        where (h.Completed == true && h.CustomerId == customerId)
-                                        select new
-                                        {
-                                            id = h.Id,
-                                            name = his.Name,
-                                            price = his.Price,
-                                            quantity = hi.Quantity,
-                                            payment = h.Payment,
-                                            delivery = h.Delivery
-                                        });
+                        var history = (from o in myDb.Orders
+                                       join od in myDb.OrderDetails on o.Id equals od.OrderId
+                                       join p in myDb.Products on od.ProductId equals p.Id
+                                       where (o.Completed == true && o.CustomerId == customerId)
+                                       select new
+                                       {
+                                           id = o.Id,
+                                           name = p.Name,
+                                           price = p.Price,
+                                           quantity = od.Quantity,
+                                           payment = o.Payment,
+                                           delivery = o.Delivery
+                                       });
                         Console.WriteLine();
                         Console.WriteLine("Order history: ");
                         foreach (var h in history)
                         {
-
                             Console.WriteLine("Order Id: " + h.id + "\nProduct: " + h.name + "\nPrice: " + h.price + "\nQuantity: " + h.quantity + "\nPayment: " + h.payment + "\nDelivery: " + h.delivery);
                             Console.WriteLine();
                         }
@@ -779,14 +701,11 @@ namespace GroupBWebshop
                         Console.ReadLine();
 
                         EditCustomer();
-
                         break;
-
                     default:
                         Console.Clear();
                         View();
                         break;
-
                 }
             }
         }
@@ -817,7 +736,6 @@ namespace GroupBWebshop
                     DeleteCustomer();
                 }
 
-
                 var choosenDeleteCustomer = (from e in myDb.Customers
                                              where e.Id == deleteCustomer
                                              select e).SingleOrDefault();
@@ -826,9 +744,9 @@ namespace GroupBWebshop
                 myDb.SaveChanges();
                 Console.Clear();
                 View();
-
             }
         }
+
         public static void DeleteCategory()
         {
             using (var myDb = new MyDbContext())
@@ -839,7 +757,6 @@ namespace GroupBWebshop
                 }
                 Console.WriteLine("Enter category Id you wish to delete: ");
 
-                //int deleteCat = int.Parse(Console.ReadLine());
                 int deleteCat = 0;
                 string deleteCatString = Console.ReadLine();
                 if (TryParseInt(deleteCatString) == true && int.Parse(deleteCatString) <= myDb.Categories.LongCount())
@@ -862,9 +779,9 @@ namespace GroupBWebshop
                 myDb.SaveChanges();
                 Console.Clear();
                 View();
-
             }
         }
+
         public static void AddCategory()
         {
             using (var myDb = new MyDbContext())
@@ -882,11 +799,11 @@ namespace GroupBWebshop
                 View();
             }
         }
+
         public static void DeleteProduct()
         {
             using (var myDb = new MyDbContext())
             {
-
                 foreach (var p in myDb.Products)
                 {
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
@@ -895,7 +812,6 @@ namespace GroupBWebshop
 
                 Console.WriteLine("Enter product Id: ");
 
-                //int prodId = int.Parse(Console.ReadLine());
                 int prodId = 0;
                 string prodIdString = Console.ReadLine();
                 if (TryParseInt(prodIdString) == true && int.Parse(prodIdString) <= myDb.Products.LongCount())
@@ -918,9 +834,9 @@ namespace GroupBWebshop
                 myDb.SaveChanges();
                 Console.Clear();
                 View();
-
             }
         }
+
         public static Product GetProduct(int id)
         {
             using (var myDb = new MyDbContext())
@@ -931,6 +847,7 @@ namespace GroupBWebshop
                 return getProduct;
             }
         }
+
         public static List<Category> CategoryInput(int numCategory)
         {
             using (var myDb = new MyDbContext())
@@ -941,7 +858,6 @@ namespace GroupBWebshop
                 {
                     Console.WriteLine("Enter category " + (i + 1) + " Id: ");
 
-                    //int catText = int.Parse(Console.ReadLine());
                     int catText = 0;
                     string catTextString = Console.ReadLine();
                     if (TryParseInt(catTextString) == true && int.Parse(catTextString) <= myDb.Categories.LongCount())
@@ -954,14 +870,11 @@ namespace GroupBWebshop
                         CategoryInput(numCategory);
                     }
 
-
                     Category category = GetCategory(catText);
 
                     categories.Add(category);
                 }
-
                 return categories;
-
             }
         }
 
@@ -1004,6 +917,7 @@ namespace GroupBWebshop
                 }
             }
         }
+
         public static bool TryParseInt(string input)
         {
             bool success = int.TryParse(input, out int number);
