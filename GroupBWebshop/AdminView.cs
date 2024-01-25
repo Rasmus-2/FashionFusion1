@@ -267,6 +267,7 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
+                CustomerView.DrawHomeButton();
                 foreach (var p in myDb.Products)
                 {
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
@@ -281,12 +282,17 @@ namespace GroupBWebshop
                 {
                     prodId = int.Parse(inputString);
                 }
-                else
+                else 
                 {
                     Console.WriteLine("Invalid input! Try write a number.");
                     Thread.Sleep(5000);
                     Console.Clear();
                     EditProduct();
+                }
+                if (prodId == 0)
+                {
+                    Console.Clear();
+                    View();
                 }
 
                 var choosenEditProd = (from e in myDb.Products
@@ -503,6 +509,8 @@ namespace GroupBWebshop
             using (var myDb = new MyDbContext())
             {
                 Console.Clear();
+                CustomerView.DrawHomeButton(140);
+
                 foreach (var p in myDb.Customers)
                 {
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode + " " + p.City + " " + p.CountryId);
@@ -534,6 +542,12 @@ namespace GroupBWebshop
                     EditCustomer();
                 }
 
+                if (customerId == 0)
+                {
+                    Console.Clear();
+                    View();
+                }
+
                 var choosenEditCustomer = (from e in myDb.Customers
                                            where e.Id == customerId
                                            select e).SingleOrDefault();
@@ -547,7 +561,7 @@ namespace GroupBWebshop
                 Console.WriteLine("Press i to edit customer's city.");
                 Console.WriteLine("Press t to edit customer's country.");
                 Console.WriteLine("Press b to check customer's order history.");
-                CustomerView.DrawHomeButton();
+                CustomerView.DrawHomeButton(110);
 
                 var key = Console.ReadKey();
 
@@ -714,6 +728,8 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
+                CustomerView.DrawHomeButton(120);
+
                 foreach (var p in myDb.Customers)
                 {
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Email + " " + p.Phone + " " + p.BirthDate + " " + p.StreetName + " " + p.PostalCode + " " + p.City + " " + p.CountryId);
@@ -734,6 +750,12 @@ namespace GroupBWebshop
                     Thread.Sleep(5000);
                     Console.Clear();
                     DeleteCustomer();
+                }
+
+                if (deleteCustomer == 0) 
+                {
+                    Console.Clear();
+                    View();
                 }
 
                 var choosenDeleteCustomer = (from e in myDb.Customers
@@ -786,12 +808,20 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
+                CustomerView.DrawHomeButton();
+
                 foreach (var c in myDb.Categories)
                 {
                     Console.WriteLine(c.Id + " " + c.Name);
                 }
                 Console.WriteLine("Enter category name: ");
                 string catName = Console.ReadLine();
+
+                if (catName == "0")
+                {
+                    Console.Clear();
+                    View();
+                }
                 Category category = new Category() { Name = catName };
                 myDb.Categories.Add(category);
                 myDb.SaveChanges();
@@ -804,6 +834,7 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
+                CustomerView.DrawHomeButton();
                 foreach (var p in myDb.Products)
                 {
                     Console.WriteLine(p.Id + " " + p.Name + " " + p.Price);
@@ -814,7 +845,7 @@ namespace GroupBWebshop
 
                 int prodId = 0;
                 string prodIdString = Console.ReadLine();
-                if (TryParseInt(prodIdString) == true && int.Parse(prodIdString) <= myDb.Products.LongCount())
+                if (TryParseInt(prodIdString) == true /*&& int.Parse(prodIdString) <= myDb.Products.LongCount()*/)
                 {
                     prodId = int.Parse(prodIdString);
                 }
@@ -824,6 +855,11 @@ namespace GroupBWebshop
                     Thread.Sleep(5000);
                     Console.Clear();
                     DeleteProduct();
+                }
+                if (prodId == 0)
+                {
+                    Console.Clear();
+                    View();
                 }
 
                 var choosenDeleteProd = (from e in myDb.Products

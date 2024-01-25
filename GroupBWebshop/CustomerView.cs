@@ -266,9 +266,15 @@ namespace GroupBWebshop
 
                 // Checking if its an int 
                 // Checking if its between 0 and maximum amount of categories
-                if (AdminView.TryParseInt(idInputString) && int.Parse(idInputString) <= myDb.Categories.LongCount() && int.Parse(idInputString) >= 0)
+                if (AdminView.TryParseInt(idInputString) && int.Parse(idInputString) <= myDb.Categories.LongCount() && int.Parse(idInputString) > 0)
                 {
                     idInput = int.Parse(idInputString);
+                    ViewProductInCategory(customerId, idInput);
+                }
+                else if (idInputString == "0")
+                {
+                    Console.Clear();
+                    View(customerId);
                 }
                 else
                 {
@@ -276,16 +282,6 @@ namespace GroupBWebshop
                     Thread.Sleep(2000);
                     Console.Clear();
                     ViewCategoryCase(customerId);
-                }
-
-                if (idInput == 0)
-                {
-                    Console.Clear();
-                    View(customerId);
-                }
-                else
-                {
-                    ViewProductInCategory(customerId, idInput);
                 }
             }
         }
@@ -309,11 +305,11 @@ namespace GroupBWebshop
 
                     int inputId = 0;
                     string inputIdString = Console.ReadLine();
-                    if (AdminView.TryParseInt(inputIdString) && int.Parse(inputIdString) <= myDb.Products.LongCount() && int.Parse(inputIdString) >= 0)
+                    if (AdminView.TryParseInt(inputIdString) && int.Parse(inputIdString) >= 0)
                     {
-                        idInput = int.Parse(inputIdString);
+                        inputId = int.Parse(inputIdString);
                     }
-                    else
+                    else 
                     {
                         Console.WriteLine("Invalid input");
                         Thread.Sleep(2000);
@@ -479,6 +475,7 @@ namespace GroupBWebshop
         {
             using (var myDb = new MyDbContext())
             {
+                DrawHomeButton(100);
                 var finalCart = CartView(customerId);
                 var total = CartPrice(customerId);
                 finalCart.Add("");
@@ -831,7 +828,6 @@ namespace GroupBWebshop
 
         public static List<string> CartView(int customerId)
         {
-            DrawHomeButton(100);
             List<string> cart = new List<string>() { };
 
             using (var myDb = new MyDbContext())
