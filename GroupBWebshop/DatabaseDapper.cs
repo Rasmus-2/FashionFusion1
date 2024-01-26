@@ -156,7 +156,7 @@ namespace GroupBWebshop
                             ON o.Id = od.OrderId
                             WHERE o.Completed = 1 
                             GROUP BY s.Name, p.Name
-                            HAVING COUNT(o.Id) > 2
+                            HAVING COUNT(o.Id) > 1
                             ORDER BY COUNT(o.Id)";
 
             List<string> bestSupplier = new List<string>();

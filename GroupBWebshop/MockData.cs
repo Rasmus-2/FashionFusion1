@@ -51,7 +51,7 @@ namespace GroupBWebshop
                 Models.Product product11 = new Models.Product
                 { Categories = new List<Category> { forKids, pants }, Name = "Red sweatpants", Material = Models.MyEnums.Material.Wool.ToString(), Size = Models.MyEnums.EnumSize.XS.ToString(), Info = "For days you don't want to go outside.", Price = 99, StockStatus = 78, SupplierId = 1, DisplayProduct = false };
                 Models.Product product12 = new Models.Product
-                { Categories = new List<Category> { forMen, forNonbinary, pants }, Name = "Camouflage joggers", Material = Models.MyEnums.Material.Cotton.ToString(), Size = Models.MyEnums.EnumSize.XL.ToString(), Info = "Trendy joggers for daily use.", Price = 399, StockStatus = 30, SupplierId = 2, DisplayProduct = true };
+                { Categories = new List<Category> { forMen, forNonbinary, pants }, Name = "Camouflage joggers", Material = Models.MyEnums.Material.Cotton.ToString(), Size = Models.MyEnums.EnumSize.XL.ToString(), Info = "Trendy joggers for daily use.", Price = 399, StockStatus = 30, SupplierId = 2, DisplayProduct = false };
 
 
 
